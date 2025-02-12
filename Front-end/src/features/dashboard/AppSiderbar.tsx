@@ -1,20 +1,16 @@
 import * as React from "react";
 import {
 	AudioWaveform,
-	BookOpen,
-	Bot,
 	Command,
 	Frame,
 	GalleryVerticalEnd,
 	LayoutDashboard,
 	Map,
 	PieChart,
-	Settings2,
-	SquareTerminal,
 	User,
 } from "lucide-react";
 import { NavMain } from "./components/NavMain";
-import { NavProjects } from "./components/NavProjects";
+// import { NavProjects } from "./components/NavProjects";
 import { NavUser } from "./components/NavUser";
 import { TeamSwitcher } from "./components/TeamSwitcher";
 import {
