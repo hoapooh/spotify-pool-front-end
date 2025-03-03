@@ -294,7 +294,7 @@ const SignupForm = () => {
 								loginByGoogleMutation({ googleToken: credentialResponse.credential })
 									.unwrap()
 									.then((data) => {
-										dispatch(login({ userToken: data.token }));
+										dispatch(login({ userToken: data.token, userData: null }));
 										navigate("/");
 										toast.success("Login successful");
 									})
