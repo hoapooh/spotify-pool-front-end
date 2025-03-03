@@ -1,11 +1,10 @@
-import { RootState } from "@/store/store"
-import { useSelector } from "react-redux"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Link } from "react-router-dom"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAppSelector } from "@/store/hooks";
+import { Link } from "react-router-dom";
 
 const PlaylistHeader = () => {
-	const { playlistDetail } = useSelector((state: RootState) => state.playlist)
-	const { isCollapsed } = useSelector((state: RootState) => state.ui)
+	const { playlistDetail } = useAppSelector((state) => state.playlist);
+	const { isCollapsed } = useAppSelector((state) => state.ui);
 
 	return (
 		<div className="flex items-end gap-4 p-6">
@@ -45,7 +44,7 @@ const PlaylistHeader = () => {
 				</div>
 			</div>
 		</div>
-	)
-}
+	);
+};
 
-export default PlaylistHeader
+export default PlaylistHeader;

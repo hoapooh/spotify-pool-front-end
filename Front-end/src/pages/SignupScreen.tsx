@@ -1,20 +1,19 @@
-import { useEffect } from "react"
-import { RootState } from "@/store/store"
-import { useSelector } from "react-redux"
-import { useNavigate } from "react-router-dom"
-import SignupForm from "@/features/Auth/SignupForm"
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import SignupForm from "@/features/Auth/SignupForm";
+import { useAppSelector } from "@/store/hooks";
 
 const SignupScreen = () => {
-	const navigate = useNavigate()
-	const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated)
+	const navigate = useNavigate();
+	const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
 
 	useEffect(() => {
 		if (isAuthenticated) {
-			navigate("/", { replace: true })
+			navigate("/", { replace: true });
 		}
-	}, [navigate, isAuthenticated])
+	}, [navigate, isAuthenticated]);
 
-	return <SignupForm />
-}
+	return <SignupForm />;
+};
 
-export default SignupScreen
+export default SignupScreen;

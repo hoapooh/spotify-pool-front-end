@@ -1,44 +1,43 @@
-import { useEffect, useRef, useState } from "react"
-import { RootState } from "@/store/store"
-import { useDispatch, useSelector } from "react-redux"
-import { toggleCollapse } from "@/store/slice/uiSlice"
+import { useEffect, useRef, useState } from "react";
+import { toggleCollapse } from "@/store/slice/uiSlice";
 
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 
-import { Folder, Loader, Music4, Plus, SquareLibrary } from "lucide-react"
+import { Folder, Loader, Music4, Plus, SquareLibrary } from "lucide-react";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import CustomTooltip from "@/components/CustomTooltip"
+} from "@/components/ui/dropdown-menu";
+import CustomTooltip from "@/components/CustomTooltip";
 
-import { Playlist } from "@/types"
-import AlertCreatePlaylist from "@/features/Layout/components/Modal/AlertCreatePlaylist"
-import { setPlaylist } from "@/store/slice/playlistSlice"
-import SidebarFooter from "@/features/Layout/SidebarFooter"
-import AddPlaylistModal from "./components/Modal/AddPlaylistModal"
-import { useGetAllPlaylistsQuery } from "@/services/apiPlaylist"
-import PlayListsSidebar from "@/features/Playlist/PlayListsSidebar"
+import { Playlist } from "@/types";
+import AlertCreatePlaylist from "@/features/Layout/components/Modal/AlertCreatePlaylist";
+import { setPlaylist } from "@/store/slice/playlistSlice";
+import SidebarFooter from "@/features/Layout/SidebarFooter";
+import AddPlaylistModal from "./components/Modal/AddPlaylistModal";
+import { useGetAllPlaylistsQuery } from "@/services/apiPlaylist";
+import PlayListsSidebar from "@/features/Playlist/PlayListsSidebar";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 const LeftSideBar = () => {
-	const navigate = useNavigate()
-	const dispatch = useDispatch()
+	const navigate = useNavigate();
+	const dispatch = useAppDispatch();
 
-	const { isCollapsed } = useSelector((state: RootState) => state.ui)
-	const { playlists } = useSelector((state: RootState) => state.playlist)
-	const { isAuthenticated } = useSelector((state: RootState) => state.auth)
+	const { isCollapsed } = useAppSelector((state) => state.ui);
+	const { playlists } = useAppSelector((state) => state.playlist);
+	const { isAuthenticated } = useAppSelector((state) => state.auth);
 
-	const [openAddPlaylistModal, setOpenAddPlaylistModal] = useState(false)
-	const [openAlert, setOpenAlert] = useState(false)
-	const alertRef = useRef<HTMLDivElement>(null)
+	const [openAddPlaylistModal, setOpenAddPlaylistModal] = useState(false);
+	const [openAlert, setOpenAlert] = useState(false);
+	const alertRef = useRef<HTMLDivElement>(null);
 
 	const handleCollapse = () => {
 		if (isAuthenticated) {
-			dispatch(toggleCollapse())
+			dispatch(toggleCollapse());
 		}
-	}
+	};
 
 	// Fetch playlists
 	const { data: playlistsData, isLoading: isLoadingPlaylist } = useGetAllPlaylistsQuery(
@@ -47,30 +46,30 @@ const LeftSideBar = () => {
 			skip: !isAuthenticated,
 		}
 	) as {
-		data: Playlist[]
-		isLoading: boolean
-	}
+		data: Playlist[];
+		isLoading: boolean;
+	};
 
 	// INFO: Close dropdown when clicking outside
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
 			if (alertRef.current && !alertRef.current.contains(event.target as Node)) {
-				setOpenAlert(false)
+				setOpenAlert(false);
 			}
-		}
+		};
 
-		document.addEventListener("mousedown", handleClickOutside)
-		return () => document.removeEventListener("mousedown", handleClickOutside)
-	}, [])
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => document.removeEventListener("mousedown", handleClickOutside);
+	}, []);
 
 	useEffect(() => {
-		dispatch(setPlaylist(playlistsData))
-	}, [dispatch, playlistsData])
+		dispatch(setPlaylist(playlistsData));
+	}, [dispatch, playlistsData]);
 
-	const hasPlaylists = playlists && playlists.length > 0
+	const hasPlaylists = playlists && playlists.length > 0;
 	// Render logic based on playlists and authentication
-	const shouldShowLibraryBody = !isAuthenticated || (isAuthenticated && !hasPlaylists)
-	const shouldShowPlaylistsSidebar = isAuthenticated && hasPlaylists
+	const shouldShowLibraryBody = !isAuthenticated || (isAuthenticated && !hasPlaylists);
+	const shouldShowPlaylistsSidebar = isAuthenticated && hasPlaylists;
 
 	return (
 		<div className={`${isCollapsed ? "w-[72px]" : "w-[380px]"} shrink-0 max-h-full relative`}>
@@ -123,10 +122,10 @@ const LeftSideBar = () => {
 												<DropdownMenuItem
 													onClick={() => {
 														if (!isAuthenticated) {
-															setOpenAlert(true)
-															return
+															setOpenAlert(true);
+															return;
 														}
-														setOpenAddPlaylistModal(true)
+														setOpenAddPlaylistModal(true);
 													}}
 												>
 													<Music4 className="size-4" />
@@ -208,7 +207,7 @@ const LeftSideBar = () => {
 			{/* ==== Create Playlist Alert ==== */}
 			{openAlert && <AlertCreatePlaylist ref={alertRef} setOpen={setOpenAlert} />}
 		</div>
-	)
-}
+	);
+};
 
-export default LeftSideBar
+export default LeftSideBar;

@@ -1,98 +1,71 @@
-import {createSlice, PayloadAction} from "@reduxjs/toolkit"
-import {jwtDecode} from "jwt-decode"
-
-// Interface for the decoded JWT token
-interface DecodedToken {
-    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier": string
-    "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": string
-    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name": string
-    Avatar: string
-}
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 // Interface for the decoded Google JWT token
-interface DecodedGoogleToken {
-    nameid: string
-    name: string
-    "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": string
-    picture: string
-}
+/* interface DecodedGoogleToken {
+	nameid: string;
+	name: string;
+	"http://schemas.microsoft.com/ws/2008/06/identity/claims/role": string;
+	picture: string;
+} */
 
 // Interface for the user data stored in the state
 interface UserData {
-    userId: string
-    displayName: string
-    role: string
-    avatar: string
+	id: string;
+	name: string;
+	role: string[];
+	avatar: string[];
 }
 
-// Interface for the userToken which contains accessToken and refreshToken
 interface UserToken {
-    accessToken: string
-    refreshToken: string
+	accessToken: string;
+	refreshToken: string;
 }
 
-// Interface for the auth state
 interface AuthState {
-    userData: UserData | null
-    userToken: UserToken | null
-    isAuthenticated: boolean
-    isLoading: boolean
+	userData: UserData | null;
+	userToken: UserToken | null;
+	isAuthenticated: boolean;
+	isLoading: boolean;
 }
 
 // Initial state
-const userData = JSON.parse(localStorage.getItem("userData") || "null") as UserData | null
-const userToken = JSON.parse(localStorage.getItem("userToken") || "null") as UserToken | null
+// const userData = JSON.parse(localStorage.getItem("userData") || "null") as UserData | null
+const userToken = JSON.parse(localStorage.getItem("userToken") || "null") as UserToken | null;
 
 const initialState: AuthState = {
-    userData,
-    userToken,
-    isAuthenticated: !!userData,
-    isLoading: false,
-}
+	userData: null,
+	userToken,
+	isAuthenticated: false,
+	isLoading: false,
+};
 
 const authSlice = createSlice({
-    name: "auth",
-    initialState,
-    reducers: {
-        login: (state, action: PayloadAction<{ userToken: UserToken; isGoogle: boolean }>) => {
-            const {userToken, isGoogle} = action.payload
-            const decodedToken = jwtDecode<DecodedToken>(userToken.accessToken)
-            const decodedGoogleToken = jwtDecode<DecodedGoogleToken>(userToken.accessToken)
+	name: "auth",
+	initialState,
+	reducers: {
+		login: (state, action: PayloadAction<{ userToken: UserToken; userData: UserData | null }>) => {
+			const { userToken, userData } = action.payload;
 
-            if (!isGoogle) {
-                state.userData = {
-                    userId:
-                        decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"],
-                    displayName: decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"],
-                    role: decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"],
-                    avatar: decodedToken.Avatar,
-                }
-            } else {
-                state.userData = {
-                    userId: decodedGoogleToken.nameid,
-                    displayName: decodedGoogleToken.name,
-                    role: decodedGoogleToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"],
-                    avatar: decodedGoogleToken.picture,
-                }
-            }
+			state.userToken = userToken;
+			state.userData = userData;
+			state.isAuthenticated = true;
 
-            state.userToken = userToken
-            state.isAuthenticated = true
-
-            // Store in localStorage
-            localStorage.setItem("userData", JSON.stringify(state.userData))
-            localStorage.setItem("userToken", JSON.stringify(state.userToken))
-        },
-        logout: (state) => {
-            state.isAuthenticated = false
-            state.userData = null
-            state.userToken = null
-            localStorage.removeItem("userData")
-            localStorage.removeItem("userToken")
-        },
-    },
-})
+			// Store in localStorage
+			localStorage.setItem("userToken", JSON.stringify(state.userToken));
+		},
+		logout: (state) => {
+			state.isAuthenticated = false;
+			// state.userData = null;
+			state.userToken = null;
+			localStorage.removeItem("userToken");
+		},
+		setUserData: (state, action: PayloadAction<UserData>) => {
+			state.userData = action.payload;
+			state.isAuthenticated = true;
+		},
+	},
+});
 
 // Export actions and reducer
-export const {login, logout} = authSlice.actions
-export default authSlice.reducer
+export const { login, logout, setUserData } = authSlice.actions;
+export default authSlice.reducer;

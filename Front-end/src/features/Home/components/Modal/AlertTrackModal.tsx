@@ -1,51 +1,50 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
 import {
 	Dialog,
 	DialogContent,
 	DialogDescription,
 	DialogHeader,
 	DialogTitle,
-} from "@/components/ui/dialog"
-import { Link } from "react-router-dom"
-import { useSelector } from "react-redux"
-import { RootState } from "@/store/store"
+} from "@/components/ui/dialog";
+import { Link } from "react-router-dom";
 
 // @ts-expect-error this package has no types
-import ColorThief from "colorthief"
+import ColorThief from "colorthief";
+import { useAppSelector } from "@/store/hooks";
 
 interface AlertTrackModalProps {
-	open: boolean
-	setOpen: (open: boolean) => void
+	open: boolean;
+	setOpen: (open: boolean) => void;
 }
 
 const AlertTrackModal = ({ open, setOpen }: AlertTrackModalProps) => {
-	const { track } = useSelector((state: RootState) => state.track)
-	const [dominantColor, setDominantColor] = useState<string>("#282828")
+	const { track } = useAppSelector((state) => state.track);
+	const [dominantColor, setDominantColor] = useState<string>("#282828");
 
 	// Utility function to convert RGB to HEX
 	const rgbToHex = (r: number, g: number, b: number): string => {
-		return "#" + [r, g, b].map((x) => x.toString(16).padStart(2, "0")).join("")
-	}
+		return "#" + [r, g, b].map((x) => x.toString(16).padStart(2, "0")).join("");
+	};
 
 	useEffect(() => {
 		if (track?.images[0]?.url) {
-			const img = new Image()
-			img.crossOrigin = "Anonymous" // Ensure CORS is handled
-			img.src = track.images[0].url
+			const img = new Image();
+			img.crossOrigin = "Anonymous"; // Ensure CORS is handled
+			img.src = track.images[0].url;
 			img.onload = () => {
-				const colorThief = new ColorThief()
-				const rgb = colorThief.getColor(img)
-				const hex = rgbToHex(rgb[0], rgb[1], rgb[2])
+				const colorThief = new ColorThief();
+				const rgb = colorThief.getColor(img);
+				const hex = rgbToHex(rgb[0], rgb[1], rgb[2]);
 
-				setDominantColor(hex)
-			}
+				setDominantColor(hex);
+			};
 		}
-	}, [track])
+	}, [track]);
 
 	const gradientStyle =
 		dominantColor !== "#282828"
 			? `linear-gradient(to bottom, ${dominantColor}, #282828)`
-			: "#282828"
+			: "#282828";
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
@@ -91,7 +90,7 @@ const AlertTrackModal = ({ open, setOpen }: AlertTrackModalProps) => {
 				</div>
 			</DialogContent>
 		</Dialog>
-	)
-}
+	);
+};
 
-export default AlertTrackModal
+export default AlertTrackModal;

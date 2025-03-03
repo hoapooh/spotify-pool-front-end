@@ -1,21 +1,20 @@
 import React from "react";
-import { Slider } from "@/components/ui/slider"
-import CustomTooltip from "@/components/CustomTooltip"
+import { Slider } from "@/components/ui/slider";
+import CustomTooltip from "@/components/CustomTooltip";
 
-import { Dot, Maximize2, SquarePlay, Volume1 } from "lucide-react"
-import { useDispatch, useSelector } from "react-redux"
-import { togglePlayingView } from "@/store/slice/uiSlice"
-import { RootState } from "@/store/store"
+import { Dot, Maximize2, SquarePlay, Volume1 } from "lucide-react";
+import { setVolume, togglePlayingView } from "@/store/slice/uiSlice";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
-interface SongOptionsProps {
-	audioRef: React.MutableRefObject<HTMLAudioElement | null>
-	volume: number
-	setVolume: (value: number) => void
-}
+/* interface SongOptionsProps {
+	audioRef: React.MutableRefObject<HTMLAudioElement | null>;
+	volume: number;
+	setVolume: (value: number) => void;
+} */
 
-const SongOptions = ({ audioRef, volume, setVolume }: SongOptionsProps) => {
-	const dispatch = useDispatch()
-	const { isPlayingView } = useSelector((state: RootState) => state.ui)
+const SongOptions = () => {
+	const dispatch = useAppDispatch();
+	const { isPlayingView, volume } = useAppSelector((state) => state.ui);
 
 	return (
 		<div className="flex gap-x-2 items-center justify-end mr-2 min-w-[180px] w-[30%]">
@@ -30,10 +29,7 @@ const SongOptions = ({ audioRef, volume, setVolume }: SongOptionsProps) => {
 					step={1}
 					className="w-24 hover:cursor-grab active:cursor-grabbing"
 					onValueChange={(value) => {
-						setVolume(value[0])
-						if (audioRef.current) {
-							audioRef.current.volume = value[0] / 100
-						}
+						dispatch(setVolume(value[0]));
 					}}
 				/>
 			</div>
@@ -55,7 +51,7 @@ const SongOptions = ({ audioRef, volume, setVolume }: SongOptionsProps) => {
 				<Maximize2 className="size-5 text-[#b3b3b3] hover:text-white cursor-pointer hover:scale-105 transition-all" />
 			</CustomTooltip>
 		</div>
-	)
-}
+	);
+};
 
-export default SongOptions
+export default SongOptions;

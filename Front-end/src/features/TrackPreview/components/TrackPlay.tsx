@@ -1,73 +1,75 @@
-import { useEffect, useRef, useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
+import { useEffect, useRef, useState } from "react";
 
-import { Pause, Play, Repeat2, Shuffle, SkipBack, SkipForward } from "lucide-react"
+import { Pause, Play, Repeat2, Shuffle, SkipBack, SkipForward } from "lucide-react";
 
-import SongOptions from "./TrackOptions"
-import { Slider } from "@/components/ui/slider"
-import { Button } from "@/components/ui/button"
-import CustomTooltip from "@/components/CustomTooltip"
+import SongOptions from "./TrackOptions";
+import { Slider } from "@/components/ui/slider";
+import { Button } from "@/components/ui/button";
+import CustomTooltip from "@/components/CustomTooltip";
 
-import { HttpTransportType, HubConnectionBuilder } from "@microsoft/signalr"
+import { HttpTransportType, HubConnectionBuilder } from "@microsoft/signalr";
 
-import { RootState } from "@/store/store"
-import { playNext, playPrevious, togglePlay, updateCurrentTime } from "@/store/slice/playerSlice"
+import { playNext, playPrevious, togglePlay, updateCurrentTime } from "@/store/slice/playerSlice";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import toast from "react-hot-toast";
 
 const formatTime = (seconds: number) => {
-	const minutes = Math.floor(seconds / 60)
-	const remainingSeconds = Math.floor(seconds % 60)
-	return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`
-}
+	const minutes = Math.floor(seconds / 60);
+	const remainingSeconds = Math.floor(seconds % 60);
+	return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+};
 
 const TrackPlay = () => {
-	const dispatch = useDispatch()
+	const dispatch = useAppDispatch();
 
 	const {
 		currentTrack,
 		isPlaying,
 		currentTime: savedCurrentTime,
-	} = useSelector((state: RootState) => state.play)
+	} = useAppSelector((state) => state.play);
 
-	const [volume, setVolume] = useState(1)
-	const [duration, setDuration] = useState(0)
-	const [currentTime, setCurrentTime] = useState(savedCurrentTime)
+	const { userToken } = useAppSelector((state) => state.auth);
+
+	// const [volume, setVolume] = useState(20);
+	const [duration, setDuration] = useState(0);
+	const [currentTime, setCurrentTime] = useState(savedCurrentTime);
 
 	// CHECKPOINT: TIMER LOGIC SIGNALR
-	const [playTime, setPlayTime] = useState(0)
-	const [playCurrentTime, setPlayCurrentTime] = useState(savedCurrentTime || 0)
-	const [hasTriggeredStream, setHasTriggeredStream] = useState(false)
+	const [playTime, setPlayTime] = useState(0);
+	const [playCurrentTime, setPlayCurrentTime] = useState(savedCurrentTime || 0);
+	const [hasTriggeredStream, setHasTriggeredStream] = useState(false);
 
-	const timerRef = useRef<NodeJS.Timeout | null>(null)
-	const audioRef = useRef<HTMLAudioElement | null>(null)
-	const timerCurrentTrackRef = useRef<NodeJS.Timeout | null>(null)
+	const timerRef = useRef<NodeJS.Timeout | null>(null);
+	const audioRef = useRef<HTMLAudioElement | null>(null);
+	const timerCurrentTrackRef = useRef<NodeJS.Timeout | null>(null);
 
 	useEffect(() => {
-		audioRef.current = document.querySelector("audio")
+		audioRef.current = document.querySelector("audio");
 
-		const audio = audioRef.current
-		if (!audio) return
+		const audio = audioRef.current;
+		if (!audio) return;
 
-		audio.currentTime = savedCurrentTime
+		audio.currentTime = savedCurrentTime;
 
-		const updateTime = () => setCurrentTime(audio.currentTime)
+		const updateTime = () => setCurrentTime(audio.currentTime);
 
-		const updateDuration = () => setDuration(audio.duration)
+		const updateDuration = () => setDuration(audio.duration);
 
-		audio.addEventListener("timeupdate", updateTime)
-		audio.addEventListener("loadedmetadata", updateDuration)
+		audio.addEventListener("timeupdate", updateTime);
+		audio.addEventListener("loadedmetadata", updateDuration);
 
 		const handleEnded = () => {
-			dispatch(togglePlay())
-		}
+			dispatch(togglePlay());
+		};
 
-		audio.addEventListener("ended", handleEnded)
+		audio.addEventListener("ended", handleEnded);
 
 		return () => {
-			audio.removeEventListener("timeupdate", updateTime)
-			audio.removeEventListener("loadedmetadata", updateDuration)
-			audio.removeEventListener("ended", handleEnded)
-		}
-	}, [currentTrack, dispatch, savedCurrentTime])
+			audio.removeEventListener("timeupdate", updateTime);
+			audio.removeEventListener("loadedmetadata", updateDuration);
+			audio.removeEventListener("ended", handleEnded);
+		};
+	}, [currentTrack, dispatch, savedCurrentTime]);
 
 	// Effect for setting currentTime
 	// useEffect(() => {
@@ -79,32 +81,32 @@ const TrackPlay = () => {
 	useEffect(() => {
 		if (isPlaying) {
 			timerCurrentTrackRef.current = setInterval(() => {
-				setPlayCurrentTime((prev) => prev + 1)
-			}, 1000)
-			dispatch(updateCurrentTime(playCurrentTime))
+				setPlayCurrentTime((prev) => prev + 1);
+			}, 1000);
+			dispatch(updateCurrentTime(playCurrentTime));
 		}
 
 		return () => {
 			if (timerCurrentTrackRef.current) {
-				clearInterval(timerCurrentTrackRef.current)
+				clearInterval(timerCurrentTrackRef.current);
 			}
-		}
-	}, [dispatch, playCurrentTime, isPlaying])
+		};
+	}, [dispatch, playCurrentTime, isPlaying]);
 
 	// Effect for tracking play time
 	useEffect(() => {
 		if (isPlaying && !hasTriggeredStream) {
 			timerRef.current = setInterval(() => {
-				setPlayTime((prev) => prev + 1)
-			}, 1000)
+				setPlayTime((prev) => prev + 1);
+			}, 1000);
 		}
 
 		return () => {
 			if (timerRef.current) {
-				clearInterval(timerRef.current)
+				clearInterval(timerRef.current);
 			}
-		}
-	}, [isPlaying, hasTriggeredStream])
+		};
+	}, [isPlaying, hasTriggeredStream]);
 
 	// Effect for SignalR connection after 10 seconds
 	useEffect(() => {
@@ -113,42 +115,62 @@ const TrackPlay = () => {
 				.withUrl(import.meta.env.VITE_SPOTIFYPOOL_HUB_COUNT_STREAM_URL, {
 					// skipNegotiation: true,
 					transport: HttpTransportType.WebSockets, // INFO: set this to websockets to use skipNegotiation
+					accessTokenFactory: () => `${userToken?.accessToken}`,
 					// transport: HttpTransportType.LongPolling,
 				})
 				.withAutomaticReconnect()
-				.build()
+				.build();
 
 			connection
 				.start()
 				.then(() => {
-					console.log("Connected to the hub")
-					connection.invoke("UpdateStreamCountAsync", currentTrack?.id)
-					setHasTriggeredStream(true) // Prevent multiple triggers
+					console.log("Connected to the hub");
+					connection.invoke("UpdateStreamCountAsync", currentTrack?.id);
+					setHasTriggeredStream(true); // Prevent multiple triggers
 				})
-				.catch((err) => console.error(err))
+				.catch((err) => console.error(err));
+
+			// NOTE: Khi sự kiện này diễn ra signalR sẽ dừng hoạt động và trả về lỗi
+			connection.on("ReceiveException", (message) => {
+				toast.error(message, {
+					position: "top-right",
+					duration: 2000,
+				});
+
+				console.log(message);
+			});
+
+			connection.onclose((error) => {
+				if (error) {
+					console.error("Connection closed due to error:", error);
+					toast.error("Connection lost. Please try again.");
+				} else {
+					console.log("Connection closed by the server.");
+				}
+			});
 
 			// Clear timer after triggering
 			if (timerRef.current) {
-				clearInterval(timerRef.current)
+				clearInterval(timerRef.current);
 			}
 		}
-	}, [playTime, currentTrack?.id, hasTriggeredStream])
+	}, [playTime, currentTrack?.id, hasTriggeredStream]);
 
 	// Reset states when song changes
 	useEffect(() => {
-		setPlayTime(0)
-		setPlayCurrentTime(0)
-		setHasTriggeredStream(false)
-		dispatch(updateCurrentTime(0))
-	}, [currentTrack?.id, dispatch])
+		setPlayTime(0);
+		setPlayCurrentTime(0);
+		setHasTriggeredStream(false);
+		dispatch(updateCurrentTime(0));
+	}, [currentTrack?.id, dispatch]);
 
 	const handleSeek = (value: number[]) => {
 		if (audioRef.current) {
-			audioRef.current.currentTime = value[0]
-			setCurrentTime(value[0])
-			dispatch(updateCurrentTime(value[0]))
+			audioRef.current.currentTime = value[0];
+			setCurrentTime(value[0]);
+			dispatch(updateCurrentTime(value[0]));
 		}
-	}
+	};
 
 	return (
 		<>
@@ -207,9 +229,9 @@ const TrackPlay = () => {
 			</div>
 
 			{/* ==== SONG OPTIONS ==== */}
-			<SongOptions audioRef={audioRef} volume={volume} setVolume={setVolume} />
+			<SongOptions />
 		</>
-	)
-}
+	);
+};
 
-export default TrackPlay
+export default TrackPlay;

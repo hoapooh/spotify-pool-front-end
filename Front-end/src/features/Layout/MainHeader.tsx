@@ -5,40 +5,39 @@ import {
 	DropdownMenuContent,
 	DropdownMenuTrigger,
 	DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
-import toast from "react-hot-toast"
-import { Button } from "@/components/ui/button"
-import CustomTooltip from "@/components/CustomTooltip"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { House, Package, Search, User, LogOut, Settings2 } from "lucide-react"
+import toast from "react-hot-toast";
+import { Button } from "@/components/ui/button";
+import CustomTooltip from "@/components/CustomTooltip";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { House, Package, Search, User, LogOut, Settings2 } from "lucide-react";
 
-import { RootState } from "@/store/store"
-import { logout } from "@/store/slice/authSlice"
-import { resetCollapse } from "@/store/slice/uiSlice"
-import { useDispatch, useSelector } from "react-redux"
-import { resetPlaylist } from "@/store/slice/playlistSlice.ts"
-import { Link, useLocation, useNavigate } from "react-router-dom"
+import { logout } from "@/store/slice/authSlice";
+import { resetCollapse } from "@/store/slice/uiSlice";
+import { resetPlaylist } from "@/store/slice/playlistSlice.ts";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 const MainHeader = () => {
-	const navigate = useNavigate()
-	const dispatch = useDispatch()
-	const location = useLocation()
-	const pathname = location.pathname
+	const navigate = useNavigate();
+	const dispatch = useAppDispatch();
+	const location = useLocation();
+	const pathname = location.pathname;
 
-	const { userData, isAuthenticated } = useSelector((state: RootState) => state.auth)
+	const { userData, isAuthenticated } = useAppSelector((state) => state.auth);
 
 	const handleNavigate = (url: string) => {
-		navigate(url)
-	}
+		navigate(url);
+	};
 
 	const handleLogout = () => {
-		dispatch(resetCollapse())
-		dispatch(resetPlaylist())
-		navigate("/")
-		dispatch(logout())
-		toast.success("Logout successful")
-	}
+		dispatch(resetCollapse());
+		dispatch(resetPlaylist());
+		navigate("/");
+		dispatch(logout());
+		toast.success("Logout successful");
+	};
 
 	return (
 		<header className="w-full flex items-center relative bg-[rgba(0,0,0,.5)] p-2 -m-2 h-16">
@@ -121,17 +120,17 @@ const MainHeader = () => {
 					<div className="pointer-events-auto z-20">
 						<DropdownMenu>
 							<DropdownMenuTrigger>
-								<CustomTooltip label={userData?.displayName} side="bottom" align="center">
+								<CustomTooltip label={userData?.name} side="bottom" align="center">
 									{/* AVATAR IMAGE */}
 									<Avatar className="bg-[#1f1f1f] items-center justify-center cursor-pointer hover:scale-110 transition-all w-12 h-12">
 										<AvatarImage
 											referrerPolicy="no-referrer"
-											src={userData?.avatar}
+											src={userData?.avatar[0]}
 											className="object-cover rounded-full w-8 h-8"
 										/>
 
 										<AvatarFallback className="bg-green-500 text-sky-100 font-bold w-8 h-8">
-											{userData?.displayName.charAt(0).toUpperCase()}
+											{userData?.name.charAt(0).toUpperCase()}
 										</AvatarFallback>
 									</Avatar>
 								</CustomTooltip>
@@ -139,14 +138,14 @@ const MainHeader = () => {
 
 							<DropdownMenuContent className="border-none bg-[#282828] w-52">
 								<DropdownMenuLabel className="w-full text-lg font-bold">
-									{userData?.displayName}
+									{userData?.name}
 								</DropdownMenuLabel>
 
 								<DropdownMenuSeparator />
 
 								{/* PROFILE BUTTON */}
 								<DropdownMenuItem
-									onSelect={() => handleNavigate(`/user/${userData?.userId}`)}
+									onSelect={() => handleNavigate(`/user/${userData?.id}`)}
 									className="text-lg cursor-pointer"
 								>
 									<User />
@@ -174,7 +173,7 @@ const MainHeader = () => {
 				)}
 			</div>
 		</header>
-	)
-}
+	);
+};
 
-export default MainHeader
+export default MainHeader;

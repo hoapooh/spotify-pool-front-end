@@ -1,20 +1,19 @@
-import { useEffect } from "react"
-import { useSelector } from "react-redux"
-import { RootState } from "@/store/store"
-import { useNavigate } from "react-router-dom"
-import LoginForm from "@/features/Auth/LoginForm"
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import LoginForm from "@/features/Auth/LoginForm";
+import { useAppSelector } from "@/store/hooks";
 
 const LoginScreen = () => {
-	const navigate = useNavigate()
-	const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated)
+	const navigate = useNavigate();
+	const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
 
 	useEffect(() => {
 		if (isAuthenticated) {
-			navigate("/", { replace: true })
+			navigate("/", { replace: true });
 		}
-	}, [navigate, isAuthenticated])
+	}, [navigate, isAuthenticated]);
 
-	return <LoginForm />
-}
+	return <LoginForm />;
+};
 
-export default LoginScreen
+export default LoginScreen;

@@ -1,36 +1,35 @@
-import { Track } from "@/types"
-import { Link } from "react-router-dom"
-import { RootState } from "@/store/store"
-import { Pause, Play } from "lucide-react"
-import { useDispatch, useSelector } from "react-redux"
-import { setCurrentTrack, togglePlay } from "@/store/slice/playerSlice"
-import { setTrack } from "@/store/slice/trackSlice"
+import { Track } from "@/types";
+import { Link } from "react-router-dom";
+import { Pause, Play } from "lucide-react";
+import { setCurrentTrack, togglePlay } from "@/store/slice/playerSlice";
+import { setTrack } from "@/store/slice/trackSlice";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 interface TrackComponentProps {
-	isAvatar?: boolean
-	track: Track
-	tracks?: Track[]
-	setOpen: (value: boolean) => void
+	isAvatar?: boolean;
+	track: Track;
+	tracks?: Track[];
+	setOpen: (value: boolean) => void;
 }
 
 const TracksComponent = ({ isAvatar, track, tracks, setOpen }: TrackComponentProps) => {
-	const dispatch = useDispatch()
-	const { isAuthenticated } = useSelector((state: RootState) => state.auth)
-	const { currentTrack, isPlaying, playlistId } = useSelector((state: RootState) => state.play)
+	const dispatch = useAppDispatch();
+	const { isAuthenticated } = useAppSelector((state) => state.auth);
+	const { currentTrack, isPlaying, playlistId } = useAppSelector((state) => state.play);
 
 	const handleTogglePlay = (track: Track) => {
 		if (!isAuthenticated) {
-			setOpen(true)
-			dispatch(setTrack({ track }))
-			return
+			setOpen(true);
+			dispatch(setTrack({ track }));
+			return;
 		}
 
 		if (currentTrack?.id === track.id && !playlistId) {
-			dispatch(togglePlay())
-			return
+			dispatch(togglePlay());
+			return;
 		}
-		dispatch(setCurrentTrack({ track, tracks: tracks || [] }))
-	}
+		dispatch(setCurrentTrack({ track, tracks: tracks || [] }));
+	};
 
 	return (
 		<div className="group inline-flex flex-col gap-x-2 p-3 rounded-sm hover:bg-[#1f1f1f] transition-all animate-in animate-out cursor-pointer">
@@ -84,7 +83,7 @@ const TracksComponent = ({ isAvatar, track, tracks, setOpen }: TrackComponentPro
 				</div>
 			</div>
 		</div>
-	)
-}
+	);
+};
 
-export default TracksComponent
+export default TracksComponent;

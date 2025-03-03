@@ -1,17 +1,16 @@
-import { Link } from "react-router-dom"
+import { Link } from "react-router-dom";
 
-import { RootState } from "@/store/store"
-import { useDispatch, useSelector } from "react-redux"
-import { appendPlaylist, appendPlaylistTracks } from "@/store/slice/playlistSlice"
+import { appendPlaylist, appendPlaylistTracks } from "@/store/slice/playlistSlice";
 
-import toast from "react-hot-toast"
-import styled from "styled-components"
-import { Button } from "@/components/ui/button"
-import CustomTooltip from "@/components/CustomTooltip"
-import { ChevronUp, CirclePlus, Loader } from "lucide-react"
+import toast from "react-hot-toast";
+import styled from "styled-components";
+import { Button } from "@/components/ui/button";
+import CustomTooltip from "@/components/CustomTooltip";
+import { ChevronUp, CirclePlus, Loader } from "lucide-react";
 
-import { HttpTransportType, HubConnectionBuilder, LogLevel } from "@microsoft/signalr"
-import { apiSlice } from "@/apis/apiSlice"
+import { HttpTransportType, HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
+import { apiSlice } from "@/apis/apiSlice";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 // Create styled component for the scrolling container
 const ScrollContainer = styled.div`
@@ -19,7 +18,7 @@ const ScrollContainer = styled.div`
 	overflow: hidden;
 	white-space: nowrap;
 	position: relative;
-`
+`;
 
 const ScrollingText = styled.div`
 	display: inline-block;
@@ -38,69 +37,69 @@ const ScrollingText = styled.div`
 			transform: translateX(-100%);
 		}
 	}
-`
+`;
 
 const TrackName = () => {
-	const dispatch = useDispatch()
+	const dispatch = useAppDispatch();
 
-	const { userToken } = useSelector((state: RootState) => state.auth)
-	const { currentTrack } = useSelector((state: RootState) => state.play)
-	const { playlists } = useSelector((state: RootState) => state.playlist)
+	const { userToken } = useAppSelector((state) => state.auth);
+	const { currentTrack } = useAppSelector((state) => state.play);
+	const { playlists } = useAppSelector((state) => state.playlist);
 
-	const trigger = apiSlice.util.invalidateTags(["Playlist"])
+	const trigger = apiSlice.util.invalidateTags(["Playlist"]);
 
 	const handleAddToNewFavoritesPlayList = () => {
 		const connection = new HubConnectionBuilder()
-			.withUrl(import.meta.env.VITE_SPOTIFYPOOL_HUB_PLAYLIST_URL, {
+			.withUrl(import.meta.env.VITE_SPOTIFYPOOL_HUB_ADD_TO_PLAYLIST_URL, {
 				// skipNegotiation: true,
 				transport: HttpTransportType.WebSockets, // INFO: set transport ở đây thànhh websockets để sử dụng skipNegotiation
 				// transport: HttpTransportType.LongPolling,
 				accessTokenFactory: () => `${userToken?.accessToken}`,
 			})
 			.configureLogging(LogLevel.Debug) // INFO: set log level ở đây để tắt log -- khôngg cho phép log ra client
-			.build()
+			.build();
 
 		connection
 			.start()
 			.then(() => {
-				console.log("Connected to the hub")
-				connection.invoke("AddToFavoritePlaylistAsync", currentTrack?.id)
+				console.log("Connected to the hub");
+				connection.invoke("AddToFavoritePlaylistAsync", currentTrack?.id);
 				// connection.invoke("AddToPlaylistAsync", currentSong?.id, null, "Favorites Songs")
 			})
-			.catch((err) => console.error(err))
+			.catch((err) => console.error(err));
 
 		// NOTE: Tạo mới playlist Favorites songs khi playlist này chưa tồn tại
 		connection.on("AddToNewFavoritePlaylistSuccessfully", (newPlaylist) => {
-			dispatch(appendPlaylist(newPlaylist))
+			dispatch(appendPlaylist(newPlaylist));
 			toast.success("Added to Favorite Songs.", {
 				position: "bottom-center",
-			})
+			});
 
 			connection
 				.stop() // Stop the connection gracefully
 				.then(() => console.log("Connection stopped by client"))
-				.catch((err) => console.error("Error stopping connection", err))
-		})
+				.catch((err) => console.error("Error stopping connection", err));
+		});
 
 		// NOTE: Khi sự kiện này diễn ra signalR sẽ dừng hoạt động và trả về lỗi
 		connection.on("ReceiveException", (message) => {
 			toast.error(message, {
 				position: "top-right",
 				duration: 2000,
-			})
+			});
 
-			console.log(message)
-		})
+			console.log(message);
+		});
 
 		connection.onclose((error) => {
 			if (error) {
-				console.error("Connection closed due to error:", error)
-				toast.error("Connection lost. Please try again.")
+				console.error("Connection closed due to error:", error);
+				toast.error("Connection lost. Please try again.");
 			} else {
-				console.log("Connection closed by the server.")
+				console.log("Connection closed by the server.");
 			}
-		})
-	}
+		});
+	};
 
 	const handleAddToFavoritesPlayList = () => {
 		const connection = new HubConnectionBuilder()
@@ -114,52 +113,52 @@ const TrackName = () => {
 				// },
 			})
 			.configureLogging(LogLevel.None) // INFO: set log level ở đây để tắt log -- khôngg cho phép log ra client
-			.build()
+			.build();
 
 		connection
 			.start()
 			.then(() => {
-				console.log("Connected to the hub")
-				connection.invoke("AddToFavoritePlaylistAsync", currentTrack?.id)
+				console.log("Connected to the hub");
+				connection.invoke("AddToFavoritePlaylistAsync", currentTrack?.id);
 				// connection.invoke("AddToPlaylistAsync", currentSong?.id, null, "Favorites Songs")
 			})
-			.catch((err) => console.error(err))
+			.catch((err) => console.error(err));
 
 		// NOTE: Thêm track vào playlist Favorites songs nếu playlist này đã tồn tại
 		connection.on("AddToFavoritePlaylistSuccessfully", (newTrack) => {
-			dispatch(appendPlaylistTracks(newTrack))
+			dispatch(appendPlaylistTracks(newTrack));
 
 			toast.success("Added to Favorite Songs.", {
 				position: "bottom-center",
-			})
+			});
 
-			dispatch(trigger)
+			dispatch(trigger);
 
 			connection
 				.stop() // Stop the connection gracefully
 				.then(() => console.log("Connection stopped by client"))
-				.catch((err) => console.error("Error stopping connection", err))
-		})
+				.catch((err) => console.error("Error stopping connection", err));
+		});
 
 		// NOTE: Khi sự kiện này diễn ra signalR sẽ dừng hoạt động và trả về lỗi
 		connection.on("ReceiveException", (message) => {
 			toast.error(message, {
 				position: "top-right",
 				duration: 2000,
-			})
+			});
 
-			console.log(message)
-		})
+			console.log(message);
+		});
 
 		connection.onclose((error) => {
 			if (error) {
-				console.error("Connection closed due to error:", error)
-				toast.error("Connection lost. Please try again.")
+				console.error("Connection closed due to error:", error);
+				toast.error("Connection lost. Please try again.");
 			} else {
-				console.log("Connection closed by the server.")
+				console.log("Connection closed by the server.");
 			}
-		})
-	}
+		});
+	};
 
 	return (
 		<div className="ps-2 min-w-[180px] w-[30%]">
@@ -240,7 +239,7 @@ const TrackName = () => {
 				</div>
 			</div>
 		</div>
-	)
-}
+	);
+};
 
-export default TrackName
+export default TrackName;

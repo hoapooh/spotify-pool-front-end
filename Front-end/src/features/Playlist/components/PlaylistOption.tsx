@@ -1,32 +1,31 @@
-import { Pause, Play } from "lucide-react"
-import { RootState } from "@/store/store"
-import { useDispatch, useSelector } from "react-redux"
-import { playPlaylist, togglePlay } from "@/store/slice/playerSlice"
+import { Pause, Play } from "lucide-react";
+import { playPlaylist, togglePlay } from "@/store/slice/playerSlice";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 const PlaylistOption = () => {
-	const dispatch = useDispatch()
+	const dispatch = useAppDispatch();
 
-	const { playlistDetail } = useSelector((state: RootState) => state.playlist)
-	const { currentTrack, isPlaying } = useSelector((state: RootState) => state.play)
+	const { playlistDetail } = useAppSelector((state) => state.playlist);
+	const { currentTrack, isPlaying } = useAppSelector((state) => state.play);
 
 	// INFO: Play the playlist from the first track or pause/play if the current track is in the playlist
 	const handlePlayPlaylist = () => {
-		if (!playlistDetail) return
+		if (!playlistDetail) return;
 
 		const iscurrentTrackInPlaylist = playlistDetail?.tracks.some(
 			(track) => track.id === currentTrack?.id
-		)
+		);
 		if (iscurrentTrackInPlaylist) {
-			dispatch(togglePlay())
-			return
+			dispatch(togglePlay());
+			return;
 		}
 
 		dispatch(
 			playPlaylist({ tracks: playlistDetail.tracks, startIndex: 0, playlistId: playlistDetail.id })
-		)
-	}
+		);
+	};
 
-	if (!playlistDetail || playlistDetail.totalTracks === 0) return null
+	if (!playlistDetail || playlistDetail.totalTracks === 0) return null;
 
 	return (
 		<div className="px-6 py-4">
@@ -40,7 +39,7 @@ const PlaylistOption = () => {
 				</span>
 			</button>
 		</div>
-	)
-}
+	);
+};
 
-export default PlaylistOption
+export default PlaylistOption;

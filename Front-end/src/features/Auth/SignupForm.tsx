@@ -5,27 +5,27 @@ import {
 	FormItem,
 	FormLabel,
 	FormMessage,
-} from "@/components/ui/form"
+} from "@/components/ui/form";
 
 // import GoogleIcon from "@/assets/icons/GoogleIcon"
 
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import CustomTooltip from "@/components/CustomTooltip"
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import CustomTooltip from "@/components/CustomTooltip";
 
-import { z } from "zod"
-import { useState } from "react"
-import { Eye, EyeOff } from "lucide-react"
-import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod";
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import toast from "react-hot-toast"
-import { useDispatch } from "react-redux"
-import { useForm } from "react-hook-form"
-import { Helmet } from "react-helmet-async"
-import { login } from "@/store/slice/authSlice"
-import { GoogleLogin } from "@react-oauth/google"
-import { Link, useNavigate } from "react-router-dom"
-import { useLoginByGoogleMutation, useRegisterMutation } from "@/services/apiAuth"
+import toast from "react-hot-toast";
+import { useForm } from "react-hook-form";
+import { Helmet } from "react-helmet-async";
+import { login } from "@/store/slice/authSlice";
+import { GoogleLogin } from "@react-oauth/google";
+import { Link, useNavigate } from "react-router-dom";
+import { useLoginByGoogleMutation, useRegisterMutation } from "@/services/apiAuth";
+import { useAppDispatch } from "@/store/hooks";
 
 const formSchema = z.object({
 	email: z.string().email({
@@ -46,27 +46,27 @@ const formSchema = z.object({
 	phoneNumber: z.string().min(10, {
 		message: "Please enter a valid phone number.",
 	}),
-})
+});
 
 const SignupForm = () => {
-	const navigate = useNavigate()
-	const dispatch = useDispatch()
+	const navigate = useNavigate();
+	const dispatch = useAppDispatch();
 
 	// First, modify the state declarations
-	const [passwordVisible, setPasswordVisible] = useState(false)
-	const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false)
+	const [passwordVisible, setPasswordVisible] = useState(false);
+	const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
 
 	// Create a toggle function that handles both fields
 	const handlePasswordVisibility = (field: "password" | "confirm") => {
 		if (field === "password") {
-			setPasswordVisible((prev) => !prev)
+			setPasswordVisible((prev) => !prev);
 		} else {
-			setConfirmPasswordVisible((prev) => !prev)
+			setConfirmPasswordVisible((prev) => !prev);
 		}
-	}
+	};
 
-	const [registerMutation] = useRegisterMutation()
-	const [loginByGoogleMutation] = useLoginByGoogleMutation()
+	const [registerMutation] = useRegisterMutation();
+	const [loginByGoogleMutation] = useLoginByGoogleMutation();
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -78,16 +78,16 @@ const SignupForm = () => {
 			displayName: "",
 			phoneNumber: "",
 		},
-	})
+	});
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
-			const response = await registerMutation(values).unwrap()
-			toast.success(response.message)
-			navigate("/login")
+			const response = await registerMutation(values).unwrap();
+			toast.success(response.message);
+			navigate("/login");
 		} catch (error) {
-			console.error(error)
-			toast.error("An error occurred while creating your account")
+			console.error(error);
+			toast.error("An error occurred while creating your account");
 		}
 	}
 
@@ -294,16 +294,16 @@ const SignupForm = () => {
 								loginByGoogleMutation({ googleToken: credentialResponse.credential })
 									.unwrap()
 									.then((data) => {
-										dispatch(login({ userToken: data.token, isGoogle: true }))
-										navigate("/")
-										toast.success("Login successful")
+										dispatch(login({ userToken: data.token }));
+										navigate("/");
+										toast.success("Login successful");
 									})
 									.catch((error) => {
-										console.error(error)
-									})
+										console.error(error);
+									});
 							}}
 							onError={() => {
-								console.error("Login Failed")
+								console.error("Login Failed");
 							}}
 						/>
 					</div>
@@ -321,7 +321,7 @@ const SignupForm = () => {
 				</div>
 			</div>
 		</div>
-	)
-}
+	);
+};
 
-export default SignupForm
+export default SignupForm;

@@ -1,9 +1,8 @@
-import { useSelector } from "react-redux"
-import { RootState } from "@/store/store.ts"
-import PlayListsItem from "@/features/Playlist/PlayListsItem.tsx"
+import PlayListsItem from "@/features/Playlist/PlayListsItem.tsx";
+import { useAppSelector } from "@/store/hooks";
 
 const PlayListsSidebar = () => {
-	const { playlists } = useSelector((state: RootState) => state.playlist)
+	const { playlists } = useAppSelector((state) => state.playlist);
 
 	return (
 		<>
@@ -11,6 +10,6 @@ const PlayListsSidebar = () => {
 				<PlayListsItem key={playlist.id} playlist={playlist} playlistIdSpecific={playlist.id} />
 			))}
 		</>
-	)
-}
-export default PlayListsSidebar
+	);
+};
+export default PlayListsSidebar;

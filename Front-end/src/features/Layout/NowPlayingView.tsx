@@ -1,8 +1,7 @@
-import CustomTooltip from "@/components/CustomTooltip"
-import { togglePlayingView } from "@/store/slice/uiSlice"
-import { RootState } from "@/store/store"
-import { PlusCircle, X } from "lucide-react"
-import { useDispatch, useSelector } from "react-redux"
+import CustomTooltip from "@/components/CustomTooltip";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { togglePlayingView } from "@/store/slice/uiSlice";
+import { PlusCircle, X } from "lucide-react";
 // NOTE: might be used for later
 /* // Selector to get the next track
 const getNextTrack = (state: RootState) => {
@@ -10,9 +9,9 @@ const getNextTrack = (state: RootState) => {
 	return currentIndex < queue.length - 1 ? queue[currentIndex + 1] : queue[0]
 } */
 const NowPlayingView = () => {
-	const dispatch = useDispatch()
-	const { isPlayingView } = useSelector((state: RootState) => state.ui)
-	const { currentTrack, nextTrack } = useSelector((state: RootState) => state.play)
+	const dispatch = useAppDispatch();
+	const { isPlayingView } = useAppSelector((state) => state.ui);
+	const { currentTrack, nextTrack } = useAppSelector((state) => state.play);
 	return (
 		<div
 			className={`${
@@ -93,6 +92,6 @@ const NowPlayingView = () => {
 				</div>
 			</div>
 		</div>
-	)
-}
-export default NowPlayingView
+	);
+};
+export default NowPlayingView;

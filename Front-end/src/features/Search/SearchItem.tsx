@@ -1,8 +1,7 @@
-import { RootState } from "@/store/store"
-import { useSelector } from "react-redux"
+import { useAppSelector } from "@/store/hooks";
 
 const SearchItem = () => {
-	const { isCollapsed } = useSelector((state: RootState) => state.ui)
+	const { isCollapsed } = useAppSelector((state) => state.ui);
 
 	return (
 		<div className={`${isCollapsed ? "min-h-52" : "min-h-40"} p-3`}>
@@ -17,7 +16,7 @@ const SearchItem = () => {
 				</div>
 			</a>
 		</div>
-	)
-}
+	);
+};
 
-export default SearchItem
+export default SearchItem;

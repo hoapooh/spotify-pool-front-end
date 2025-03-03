@@ -5,27 +5,27 @@ import {
 	FormItem,
 	FormLabel,
 	FormMessage,
-} from "@/components/ui/form"
+} from "@/components/ui/form";
 
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 
-import { z } from "zod"
-import toast from "react-hot-toast"
-import { Link } from "react-router-dom"
-import { useDispatch } from "react-redux"
-import { useForm } from "react-hook-form"
-import { Helmet } from "react-helmet-async"
-import { useNavigate } from "react-router-dom"
-import { login } from "@/store/slice/authSlice"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useLoginByGoogleMutation, useLoginMutation } from "@/services/apiAuth"
+import { z } from "zod";
+import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { Helmet } from "react-helmet-async";
+import { useNavigate } from "react-router-dom";
+import { login } from "@/store/slice/authSlice";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useLoginByGoogleMutation, useLoginMutation } from "@/services/apiAuth";
 
-import { GoogleLogin } from "@react-oauth/google"
-import CustomTooltip from "@/components/CustomTooltip"
-import { Eye, EyeOff } from "lucide-react"
-import { useState } from "react"
+import { GoogleLogin } from "@react-oauth/google";
+import CustomTooltip from "@/components/CustomTooltip";
+import { Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
+import { useAppDispatch } from "@/store/hooks";
 
 const formSchema = z.object({
 	username: z.string(),
@@ -33,17 +33,17 @@ const formSchema = z.object({
 		message: "Your password must be at least 3 characters long.",
 	}),
 	remember: z.boolean(),
-})
+});
 
 const LoginForm = () => {
-	const navigate = useNavigate()
-	const dispatch = useDispatch()
+	const navigate = useNavigate();
+	const dispatch = useAppDispatch();
 
-	const [visible, setVisible] = useState(false)
+	const [visible, setVisible] = useState(false);
 
 	const handleChangeVisible = () => {
-		setVisible((visible) => !visible)
-	}
+		setVisible((visible) => !visible);
+	};
 
 	// NOTE: google login button width change based on window size
 	// Inside component:
@@ -70,8 +70,8 @@ const LoginForm = () => {
 	// 	return () => window.removeEventListener("resize", handleResize)
 	// }, [])
 
-	const [loginMutation] = useLoginMutation()
-	const [loginByGoogleMutation] = useLoginByGoogleMutation()
+	const [loginMutation] = useLoginMutation();
+	const [loginByGoogleMutation] = useLoginByGoogleMutation();
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -80,7 +80,7 @@ const LoginForm = () => {
 			password: "",
 			remember: false,
 		},
-	})
+	});
 
 	function onSubmit(values: z.infer<typeof formSchema>) {
 		loginMutation({ username: values.username, password: values.password })
@@ -89,15 +89,22 @@ const LoginForm = () => {
 				dispatch(
 					login({
 						userToken: data.authenticatedResponseModel,
-						isGoogle: false,
+						userData: {
+							id: "6734c68cb92ba642dd3c8fd0",
+							role: ["Customer"],
+							name: "tudase",
+							avatar: [
+								"https://res.cloudinary.com/dofnn7sbx/image/upload/v1730097883/60d5dc467b950c5ccc8ced95_spotify-for-artists_on4me9.jpg",
+							],
+						},
 					})
-				)
-				navigate("/")
-				toast.success("Login successful")
+				);
+				navigate("/");
+				toast.success("Login successful");
 			})
 			.catch((error) => {
-				console.error(error)
-			})
+				console.error(error);
+			});
 	}
 
 	return (
@@ -226,6 +233,15 @@ const LoginForm = () => {
 						</span>
 					</div>
 
+					{/* <Button
+						className="rounded-full bg-transparent transition-all duration-300 p-2 pl-8 pr-8 w-full mt-8 border-[1px] border-solid border-[#727272] hover:bg-transparent hover:border-[#fff] text-white font-bold"
+						type="button"
+						onClick={() => loginGoogle()}
+					>
+						<GoogleIcon />
+						Continue with Google
+					</Button> */}
+
 					{/* ==== Google login button ==== */}
 					<div
 						className="mt-3"
@@ -241,26 +257,26 @@ const LoginForm = () => {
 								loginByGoogleMutation({ googleToken: credentialResponse.credential })
 									.unwrap()
 									.then((data) => {
-										dispatch(login({ userToken: data.token, isGoogle: true }))
-										navigate("/")
-										toast.success("Login successful")
+										dispatch(login({ userToken: data.token, userData: null }));
+										navigate("/");
+										toast.success("Login successful");
 									})
 									.catch((error) => {
 										// Handle specific error codes
 										if (error.status === 423) {
 											toast.error(
 												"Account is temporarily locked. Please try again later or contact support."
-											)
+											);
 										} else if (error.status === 401) {
-											toast.error("Invalid credentials. Please try again.")
+											toast.error("Invalid credentials. Please try again.");
 										} else {
-											toast.error("Login failed. Please try again.")
+											toast.error("Login failed. Please try again.");
 										}
-										console.error("Google login error:", error)
-									})
+										console.error("Google login error:", error);
+									});
 							}}
 							onError={() => {
-								console.error("Login Failed")
+								console.error("Login Failed");
 							}}
 						/>
 					</div>
@@ -278,7 +294,7 @@ const LoginForm = () => {
 				</div>
 			</div>
 		</div>
-	)
-}
+	);
+};
 
-export default LoginForm
+export default LoginForm;

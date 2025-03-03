@@ -1,53 +1,52 @@
-import { Playlist } from "@/types"
-import toast from "react-hot-toast"
-import { Link } from "react-router-dom"
-import { RootState } from "@/store/store"
-import { CircleMinus, Play, Volume2 } from "lucide-react"
-import { useDispatch, useSelector } from "react-redux"
+import { Playlist } from "@/types";
+import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
+import { CircleMinus, Play, Volume2 } from "lucide-react";
 import {
 	ContextMenu,
 	ContextMenuContent,
 	ContextMenuItem,
 	ContextMenuShortcut,
 	ContextMenuTrigger,
-} from "@/components/ui/context-menu"
-import CustomTooltip from "@/components/CustomTooltip"
-import { deletePlaylist } from "@/store/slice/playlistSlice"
-import { HttpTransportType, HubConnectionBuilder, LogLevel } from "@microsoft/signalr"
-import { playPlaylist, togglePlay } from "@/store/slice/playerSlice"
+} from "@/components/ui/context-menu";
+import CustomTooltip from "@/components/CustomTooltip";
+import { deletePlaylist } from "@/store/slice/playlistSlice";
+import { HttpTransportType, HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
+import { playPlaylist, togglePlay } from "@/store/slice/playerSlice";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 interface PlayListsItemProps {
-	playlist: Playlist
-	playlistIdSpecific: string
+	playlist: Playlist;
+	playlistIdSpecific: string;
 }
 
 const PlayListsItem = ({ playlist, playlistIdSpecific }: PlayListsItemProps) => {
-	const dispatch = useDispatch()
+	const dispatch = useAppDispatch();
 
-	const { isCollapsed } = useSelector((state: RootState) => state.ui)
-	const { userToken } = useSelector((state: RootState) => state.auth)
+	const { isCollapsed } = useAppSelector((state) => state.ui);
+	const { userToken } = useAppSelector((state) => state.auth);
 
-	const { playlistDetail } = useSelector((state: RootState) => state.playlist)
-	const { currentTrack, isPlaying, playlistId } = useSelector((state: RootState) => state.play)
+	const { playlistDetail } = useAppSelector((state) => state.playlist);
+	const { currentTrack, isPlaying, playlistId } = useAppSelector((state) => state.play);
 
 	// INFO: Play the playlist from the first track or pause/play if the current track is in the playlist
 	const handlePlayPlaylist = (event: React.MouseEvent) => {
-		event.preventDefault()
+		event.preventDefault();
 
-		if (!playlistDetail) return
+		if (!playlistDetail) return;
 
 		const iscurrentTrackInPlaylist = playlistDetail?.tracks.some(
 			(track) => track.id === currentTrack?.id
-		)
+		);
 		if (iscurrentTrackInPlaylist) {
-			dispatch(togglePlay())
-			return
+			dispatch(togglePlay());
+			return;
 		}
 
 		dispatch(
 			playPlaylist({ tracks: playlistDetail.tracks, startIndex: 0, playlistId: playlistDetail.id })
-		)
-	}
+		);
+	};
 
 	const handleDeletePlaylist = () => {
 		const connection = new HubConnectionBuilder()
@@ -62,39 +61,39 @@ const PlayListsItem = ({ playlist, playlistIdSpecific }: PlayListsItemProps) => 
 			})
 			.withAutomaticReconnect()
 			.configureLogging(LogLevel.None) // INFO: set log level ở đây để tắt log -- khôngg cho phép log ra client
-			.build()
+			.build();
 
 		connection
 			.start()
 			.then(() => {
-				console.log("Connected to the hub")
-				connection.invoke("DeletePlaylistAsync", playlist.id)
+				console.log("Connected to the hub");
+				connection.invoke("DeletePlaylistAsync", playlist.id);
 				// connection.invoke("AddToPlaylistAsync", currentSong?.id, null, "Favorites Songs")
 			})
-			.catch((err) => console.error(err))
+			.catch((err) => console.error(err));
 
 		// NOTE: Tạo mới playlist Favorites songs khi playlist này chưa tồn tại
 		connection.on("DeletePlaylistSuccessfully", (playlistId) => {
-			dispatch(deletePlaylist(playlistId))
+			dispatch(deletePlaylist(playlistId));
 			toast.success("Removed from Your Library", {
 				position: "bottom-center",
-			})
-		})
+			});
+		});
 
 		// NOTE: Khi sự kiện này diễn ra signalR sẽ dừng hoạt động và trả về lỗi
 		connection.on("ReceiveException", (message) => {
 			toast.error(message, {
 				position: "top-right",
 				duration: 2000,
-			})
+			});
 
-			console.log(message)
-		})
+			console.log(message);
+		});
 
 		connection.onclose(() => {
-			console.log("Connection closed")
-		})
-	}
+			console.log("Connection closed");
+		});
+	};
 
 	return (
 		<ContextMenu>
@@ -157,6 +156,6 @@ const PlayListsItem = ({ playlist, playlistIdSpecific }: PlayListsItemProps) => 
 				</ContextMenuItem>
 			</ContextMenuContent>
 		</ContextMenu>
-	)
-}
-export default PlayListsItem
+	);
+};
+export default PlayListsItem;
