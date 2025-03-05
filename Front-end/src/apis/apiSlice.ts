@@ -1,27 +1,17 @@
+import { logout, setUserToken } from "@/store/slice/authSlice";
+import { RootState } from "@/store/store";
 import {
-	// BaseQueryFn,
+	BaseQueryFn,
 	createApi,
-	// FetchArgs,
+	FetchArgs,
 	fetchBaseQuery,
-	// FetchBaseQueryError,
+	FetchBaseQueryError,
 } from "@reduxjs/toolkit/query/react";
-// import { Mutex } from "async-mutex";
-
-// Token structure
-interface UserToken {
-	accessToken: string;
-}
-// Auth state structure
-interface AuthState {
-	userToken: UserToken;
-}
-// Root state structure
-interface RootState {
-	auth: AuthState;
-}
+import { Mutex } from "async-mutex";
+import toast from "react-hot-toast";
 
 // Create a mutex to prevent multiple refresh token requests
-// const mutex = new Mutex();
+const mutex = new Mutex();
 
 const baseQueryWithAuth = fetchBaseQuery({
 	baseUrl: import.meta.env.VITE_API_ENDPOINT + "/api/v1",
@@ -32,14 +22,22 @@ const baseQueryWithAuth = fetchBaseQuery({
 		}
 
 		if (!headers.has("Authorization")) {
-			const token = (getState() as RootState).auth?.userToken?.accessToken;
+			// First try Redux state
+			const token = (getState() as RootState).auth.userToken;
+
+			console.log("first token", token);
+
 			if (token) {
 				headers.set("Authorization", `Bearer ${token}`);
-			} else {
-				// Match the same format as in your auth slice
-				const storedToken = JSON.parse(localStorage.getItem("userToken") || "null");
-				if (storedToken?.accessToken) {
-					headers.set("Authorization", `Bearer ${storedToken.accessToken}`);
+			}
+			// Then fall back to localStorage with your current key
+			else {
+				const storedToken = JSON.parse(window.localStorage.getItem("userToken")!) as string | null;
+
+				console.log("stored token", storedToken);
+
+				if (storedToken) {
+					headers.set("Authorization", `Bearer ${storedToken}`);
 				}
 			}
 		}
@@ -48,33 +46,42 @@ const baseQueryWithAuth = fetchBaseQuery({
 	credentials: "include",
 });
 
-// TODO: Uncomment this code to enable refresh token logic
 // Create a custom base query function with refresh token logic
-/* const baseQueryWithRefresh: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
+/* const baseQueryWithReAuth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
 	args,
 	api,
 	extraOptions
 ) => {
 	let result = await baseQueryWithAuth(args, api, extraOptions);
-	if (result.error && result.error.status === 401) {
+
+	console.log("First result", result);
+
+	if (result.error && (result.error.status === 401 || result.error.status === "FETCH_ERROR")) {
 		if (!mutex.isLocked()) {
 			const release = await mutex.acquire();
 
 			try {
 				// Try to get a new token
-        const refreshResult = await baseQueryWithAuth(
-          "/auth/refresh",
-          api,
-          extraOptions
-        );
+				const refreshResult = await baseQueryWithAuth(
+					{ url: "/authentication/refresh-token", method: "POST", credentials: "include" },
+					api,
+					extraOptions
+				);
+
+				console.log("Refresh result", refreshResult);
 
 				if (refreshResult.data) {
-					// If the refresh token request was successful, retry the original request
-					// access_token duoc set lai
+					const data = refreshResult.data as { result: string };
+					api.dispatch(setUserToken(data.result));
+
+					// Update localStorage
+					localStorage.setItem("userToken", JSON.stringify(data));
+
 					result = await baseQueryWithAuth(args, api, extraOptions);
 				} else {
-          api.dispatch(loggedOut())
-        }
+					api.dispatch(logout());
+					toast.error("Your session has expired. Please login again.");
+				}
 			} finally {
 				release();
 			}

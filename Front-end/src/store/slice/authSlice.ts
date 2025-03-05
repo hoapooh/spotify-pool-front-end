@@ -1,13 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-// Interface for the decoded Google JWT token
-/* interface DecodedGoogleToken {
-	nameid: string;
-	name: string;
-	"http://schemas.microsoft.com/ws/2008/06/identity/claims/role": string;
-	picture: string;
-} */
-
 // Interface for the user data stored in the state
 interface UserData {
 	id: string;
@@ -16,21 +8,15 @@ interface UserData {
 	avatar: string[];
 }
 
-interface UserToken {
-	accessToken: string;
-	refreshToken: string;
-}
-
 interface AuthState {
 	userData: UserData | null;
-	userToken: UserToken | null;
+	userToken: string | null;
 	isAuthenticated: boolean;
 	isLoading: boolean;
 }
 
 // Initial state
-// const userData = JSON.parse(localStorage.getItem("userData") || "null") as UserData | null
-const userToken = JSON.parse(localStorage.getItem("userToken") || "null") as UserToken | null;
+const userToken = JSON.parse(localStorage.getItem("userToken")!) as string | null;
 
 const initialState: AuthState = {
 	userData: null,
@@ -43,7 +29,7 @@ const authSlice = createSlice({
 	name: "auth",
 	initialState,
 	reducers: {
-		login: (state, action: PayloadAction<{ userToken: UserToken; userData: UserData | null }>) => {
+		login: (state, action: PayloadAction<{ userToken: string; userData: UserData | null }>) => {
 			const { userToken, userData } = action.payload;
 
 			state.userToken = userToken;
@@ -55,7 +41,7 @@ const authSlice = createSlice({
 		},
 		logout: (state) => {
 			state.isAuthenticated = false;
-			// state.userData = null;
+			state.userData = null;
 			state.userToken = null;
 			localStorage.removeItem("userToken");
 		},
@@ -63,9 +49,12 @@ const authSlice = createSlice({
 			state.userData = action.payload;
 			state.isAuthenticated = true;
 		},
+		setUserToken: (state, action: PayloadAction<string>) => {
+			state.userToken = action.payload;
+		},
 	},
 });
 
 // Export actions and reducer
-export const { login, logout, setUserData } = authSlice.actions;
+export const { login, logout, setUserData, setUserToken } = authSlice.actions;
 export default authSlice.reducer;

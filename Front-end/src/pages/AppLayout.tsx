@@ -12,6 +12,7 @@ import NowPlayingView from "@/features/Layout/NowPlayingView";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useGetCurrentUserQuery } from "@/services/apiAuth";
 import { setUserData } from "@/store/slice/authSlice";
+import { useAuthRedirect } from "@/hooks/use-auth-redirect";
 
 function AppLayout() {
 	const { isAuthenticated } = useAppSelector((state) => state.auth);
@@ -33,6 +34,8 @@ function AppLayout() {
 			dispatch(setUserData(userData.authenticatedUserInfoResponseModel));
 		}
 	}, [userData, dispatch]);
+
+	useAuthRedirect();
 
 	return (
 		<div className={"p-2"}>

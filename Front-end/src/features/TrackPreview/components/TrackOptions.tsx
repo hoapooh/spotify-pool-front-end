@@ -11,9 +11,10 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 	setVolume: (value: number) => void;
 } */
 
-const SongOptions = () => {
+const TrackOptions = () => {
 	const dispatch = useAppDispatch();
 	const { isPlayingView, volume } = useAppSelector((state) => state.ui);
+	const { track } = useAppSelector((state) => state.track);
 
 	return (
 		<div className="flex gap-x-2 items-center justify-end mr-2 min-w-[180px] w-[30%]">
@@ -33,18 +34,22 @@ const SongOptions = () => {
 				/>
 			</div>
 
-			<CustomTooltip label="Now playing view">
-				<button className="relative" onClick={() => dispatch(togglePlayingView())}>
-					<SquarePlay
-						className={`size-5 ${
-							isPlayingView ? "text-[#1ed760]" : "text-[#b3b3b3] hover:text-white"
-						} cursor-pointer hover:scale-105 transition-all`}
-					/>
-					{isPlayingView && (
-						<Dot className="absolute -bottom-3 left-1/2 -translate-x-1/2 size-4 text-[#1ed760]" />
-					)}
-				</button>
-			</CustomTooltip>
+			{track ? (
+				<CustomTooltip label="Now playing view">
+					<button className="relative" onClick={() => dispatch(togglePlayingView())}>
+						<SquarePlay
+							className={`size-5 ${
+								isPlayingView ? "text-[#1ed760]" : "text-[#b3b3b3] hover:text-white"
+							} cursor-pointer hover:scale-105 transition-all`}
+						/>
+						{isPlayingView && (
+							<Dot className="absolute -bottom-3 left-1/2 -translate-x-1/2 size-4 text-[#1ed760]" />
+						)}
+					</button>
+				</CustomTooltip>
+			) : (
+				<SquarePlay className={`size-5 text-[#4d4d4d] cursor-not-allowed`} />
+			)}
 
 			<CustomTooltip label="Fullscreen">
 				<Maximize2 className="size-5 text-[#b3b3b3] hover:text-white cursor-pointer hover:scale-105 transition-all" />
@@ -53,4 +58,4 @@ const SongOptions = () => {
 	);
 };
 
-export default SongOptions;
+export default TrackOptions;

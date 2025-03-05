@@ -20,7 +20,6 @@ const TracksComponent = ({ isAvatar, track, tracks, setOpen }: TrackComponentPro
 	const handleTogglePlay = (track: Track) => {
 		if (!isAuthenticated) {
 			setOpen(true);
-			dispatch(setTrack({ track }));
 			return;
 		}
 
@@ -28,6 +27,7 @@ const TracksComponent = ({ isAvatar, track, tracks, setOpen }: TrackComponentPro
 			dispatch(togglePlay());
 			return;
 		}
+		dispatch(setTrack({ track }));
 		dispatch(setCurrentTrack({ track, tracks: tracks || [] }));
 	};
 

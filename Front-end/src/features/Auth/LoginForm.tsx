@@ -83,12 +83,15 @@ const LoginForm = () => {
 	});
 
 	function onSubmit(values: z.infer<typeof formSchema>) {
-		loginMutation({ username: values.username, password: values.password })
+		loginMutation({
+			username: values.username,
+			password: values.password,
+		})
 			.unwrap()
 			.then((data) => {
 				dispatch(
 					login({
-						userToken: data.authenticatedResponseModel,
+						userToken: data.authenticatedResponseModel.accessToken,
 						userData: {
 							id: "6734c68cb92ba642dd3c8fd0",
 							role: ["Customer"],

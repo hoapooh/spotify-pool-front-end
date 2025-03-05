@@ -1,5 +1,5 @@
-import { Helmet } from "react-helmet-async"
-import SearchItem from "@/features/Search/SearchItem"
+import { Helmet } from "react-helmet-async";
+import SearchItem from "@/features/Search/SearchItem";
 
 export default function Search() {
 	return (
@@ -22,5 +22,5 @@ export default function Search() {
 				</div>
 			</div>
 		</>
-	)
+	);
 }

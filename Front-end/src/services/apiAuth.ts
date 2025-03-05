@@ -1,8 +1,30 @@
 import { apiSlice } from "../apis/apiSlice";
 
+/* interface LoginResponse {
+	message: string;
+	accessToken: string;
+} */
+
+interface LoginResponse {
+	message: string;
+	authenticatedResponseModel: {
+		accessToken: string;
+		refreshToken: string;
+	};
+}
+
+interface CurrentUserResponse {
+	authenticatedUserInfoResponseModel: {
+		id: string;
+		role: string[];
+		name: string;
+		avatar: string[];
+	};
+}
+
 export const authApi = apiSlice.injectEndpoints({
 	endpoints: (build) => ({
-		login: build.mutation({
+		login: build.mutation<LoginResponse, { username: string; password: string }>({
 			query: (data) => ({
 				url: "/authentication/login",
 				method: "POST",
@@ -34,7 +56,7 @@ export const authApi = apiSlice.injectEndpoints({
 			}),
 			invalidatesTags: ["Auth"],
 		}),
-		getCurrentUser: build.query({
+		getCurrentUser: build.query<CurrentUserResponse, void>({
 			query: () => ({
 				url: "/authentication/authenticated-user-info",
 				method: "GET",

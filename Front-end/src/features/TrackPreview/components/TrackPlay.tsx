@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 
 import { Pause, Play, Repeat2, Shuffle, SkipBack, SkipForward } from "lucide-react";
 
-import SongOptions from "./TrackOptions";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import CustomTooltip from "@/components/CustomTooltip";
@@ -115,7 +114,7 @@ const TrackPlay = () => {
 				.withUrl(import.meta.env.VITE_SPOTIFYPOOL_HUB_COUNT_STREAM_URL, {
 					// skipNegotiation: true,
 					transport: HttpTransportType.WebSockets, // INFO: set this to websockets to use skipNegotiation
-					accessTokenFactory: () => `${userToken?.accessToken}`,
+					accessTokenFactory: () => `${userToken}`,
 					// transport: HttpTransportType.LongPolling,
 				})
 				.withAutomaticReconnect()
@@ -222,14 +221,11 @@ const TrackPlay = () => {
 						step={1}
 						max={duration || 100}
 						onValueChange={handleSeek}
-						className="w-full hover:cursor-grab active:cursor-grabbing"
+						className="w-full"
 					/>
 					<span>{formatTime(duration)}</span>
 				</div>
 			</div>
-
-			{/* ==== SONG OPTIONS ==== */}
-			<SongOptions />
 		</>
 	);
 };

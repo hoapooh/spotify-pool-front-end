@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button";
 import CustomTooltip from "@/components/CustomTooltip";
 import { ChevronUp, CirclePlus, Loader } from "lucide-react";
 
-import { HttpTransportType, HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import { apiSlice } from "@/apis/apiSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { HttpTransportType, HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 
 // Create styled component for the scrolling container
 const ScrollContainer = styled.div`
@@ -54,7 +54,7 @@ const TrackName = () => {
 				// skipNegotiation: true,
 				transport: HttpTransportType.WebSockets, // INFO: set transport ở đây thànhh websockets để sử dụng skipNegotiation
 				// transport: HttpTransportType.LongPolling,
-				accessTokenFactory: () => `${userToken?.accessToken}`,
+				accessTokenFactory: () => `${userToken}`,
 			})
 			.configureLogging(LogLevel.Debug) // INFO: set log level ở đây để tắt log -- khôngg cho phép log ra client
 			.build();
@@ -107,7 +107,7 @@ const TrackName = () => {
 				// skipNegotiation: true,
 				transport: HttpTransportType.WebSockets, // INFO: set transport ở đây thànhh websockets để sử dụng skipNegotiation
 				// transport: HttpTransportType.LongPolling,
-				accessTokenFactory: () => `${userToken?.accessToken}`,
+				accessTokenFactory: () => `${userToken}`,
 				// headers: {
 				// 	Authorization: `ROCEEaMgL6TEDqZlwxvm3ELwCBTc8MVC`,
 				// },
