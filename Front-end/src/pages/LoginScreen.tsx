@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import LoginForm from "@/features/Auth/LoginForm";
+import LoginForm from "@/features/customer/Auth/LoginForm";
 import { useAppSelector } from "@/store/hooks";
 
 const LoginScreen = () => {

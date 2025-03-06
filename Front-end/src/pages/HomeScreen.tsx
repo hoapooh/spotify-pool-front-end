@@ -1,7 +1,7 @@
-import Home from "@/features/Home/Home"
+import Home from "@/features/customer/Home/Home";
 
 function HomeScreen() {
-	return <Home />
+	return <Home />;
 }
 
-export default HomeScreen
+export default HomeScreen;

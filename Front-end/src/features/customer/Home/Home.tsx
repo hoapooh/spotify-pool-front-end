@@ -1,51 +1,51 @@
-import { useCallback, useEffect, useState } from "react"
-import { Helmet } from "react-helmet-async"
+import { useCallback, useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 
-import Loader from "@/components/ui/Loader"
-import TracksHeader from "@/features/Home/TracksHeader.tsx"
-import TracksComponent from "@/features/Home/TracksComponent.tsx"
+import Loader from "@/components/ui/Loader";
+import TracksHeader from "@/features/customer/Home/TracksHeader";
+import TracksComponent from "@/features/customer/Home/TracksComponent";
 
-import { Track } from "@/types"
-import { useGetTracksQuery } from "@/services/apiTracks"
-import AlertTrackModal from "./components/Modal/AlertTrackModal"
-import { Loader2 } from "lucide-react"
+import { Track } from "@/types";
+import { useGetTracksQuery } from "@/services/apiTracks";
+import AlertTrackModal from "./components/Modal/AlertTrackModal";
+import { Loader2 } from "lucide-react";
 
 function Home() {
-	const [open, setOpen] = useState(false)
-	const [offset, setOffset] = useState(1)
-	const [loadingData, setLoadingData] = useState(false)
+	const [open, setOpen] = useState(false);
+	const [offset, setOffset] = useState(1);
+	const [loadingData, setLoadingData] = useState(false);
 
 	// NOTE: Hiện tại chỉ lấy 20 bài hát đầu tiên -- chỉ cần scroll xuống dưới sẽ tự động để load thêm bài hát
 	const { data = [], isLoading } = useGetTracksQuery({ offset, limit: 20 }) as {
-		data: Track[]
-		isLoading: boolean
-	}
+		data: Track[];
+		isLoading: boolean;
+	};
 
-	const [tracksData, setTracksData] = useState<Track[]>([])
+	const [tracksData, setTracksData] = useState<Track[]>([]);
 
 	useEffect(() => {
 		if (data.length > 0) {
-			setTracksData((prev) => [...prev, ...data])
+			setTracksData((prev) => [...prev, ...data]);
 		}
-		setLoadingData(false)
-	}, [data])
+		setLoadingData(false);
+	}, [data]);
 
 	const handleScroll = useCallback(() => {
 		const { scrollTop, clientHeight, scrollHeight } = document.getElementById(
 			"main-content"
-		) as HTMLElement
+		) as HTMLElement;
 
 		if (scrollTop + clientHeight + 1 >= scrollHeight) {
-			setLoadingData(true)
-			setOffset((prev) => prev + 1)
+			setLoadingData(true);
+			setOffset((prev) => prev + 1);
 		}
-	}, [])
+	}, []);
 
 	useEffect(() => {
-		const test = document.getElementById("main-content") as HTMLElement
-		test.addEventListener("scroll", handleScroll)
-		return () => test.removeEventListener("scroll", handleScroll)
-	}, [handleScroll])
+		const test = document.getElementById("main-content") as HTMLElement;
+		test.addEventListener("scroll", handleScroll);
+		return () => test.removeEventListener("scroll", handleScroll);
+	}, [handleScroll]);
 
 	// useEffect(() => {
 	// 	if (tracksData.length > 0) {
@@ -53,7 +53,7 @@ function Home() {
 	// 	}
 	// }, [dispatch, tracksData])
 
-	if (isLoading) return <Loader />
+	if (isLoading) return <Loader />;
 
 	return (
 		<div>
@@ -89,7 +89,7 @@ function Home() {
 				<AlertTrackModal open={open} setOpen={setOpen} />
 			</div>
 		</div>
-	)
+	);
 }
 
-export default Home
+export default Home;

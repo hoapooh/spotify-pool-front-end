@@ -48,7 +48,7 @@ const data = {
 	navMain: [
 		{
 			title: "Dashboard",
-			url: "/dashboard",
+			url: "/admin/dashboard",
 			icon: LayoutDashboard,
 			/* items: [
 				{
@@ -67,7 +67,7 @@ const data = {
 		},
 		{
 			title: "User",
-			url: "/dashboard/user",
+			url: "/admin/user",
 			icon: User,
 			/* items: [
 				{
@@ -161,7 +161,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				{/* <NavProjects projects={data.projects} /> */}
 			</SidebarContent>
 			<SidebarFooter>
-				<NavUser user={data.user} />
+				<NavUser />
 			</SidebarFooter>
 			<SidebarRail />
 		</Sidebar>

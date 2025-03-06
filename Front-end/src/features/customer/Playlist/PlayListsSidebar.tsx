@@ -1,4 +1,4 @@
-import PlayListsItem from "@/features/Playlist/PlayListsItem.tsx";
+import PlayListsItem from "@/features/customer/Playlist/PlayListsItem";
 import { useAppSelector } from "@/store/hooks";
 
 const PlayListsSidebar = () => {

@@ -54,7 +54,7 @@ const PlayListsItem = ({ playlist, playlistIdSpecific }: PlayListsItemProps) => 
 				// skipNegotiation: true,
 				transport: HttpTransportType.WebSockets, // INFO: set transport ở đây thànhh websockets để sử dụng skipNegotiation
 				// transport: HttpTransportType.LongPolling,
-				accessTokenFactory: () => `${userToken?.accessToken}`,
+				accessTokenFactory: () => `${userToken}`,
 				// headers: {
 				// 	Authorization: `ROCEEaMgL6TEDqZlwxvm3ELwCBTc8MVC`,
 				// },

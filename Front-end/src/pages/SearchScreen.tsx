@@ -1,7 +1,7 @@
-import Search from "@/features/Search/Search"
+import Search from "@/features/customer/Search/Search";
 
 const SearchScreen = () => {
-	return <Search />
-}
+	return <Search />;
+};
 
-export default SearchScreen
+export default SearchScreen;

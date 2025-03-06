@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import SignupForm from "@/features/Auth/SignupForm";
+import SignupForm from "@/features/customer/Auth/SignupForm";
 import { useAppSelector } from "@/store/hooks";
 
 const SignupScreen = () => {

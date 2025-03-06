@@ -1,5 +1,5 @@
 import { Helmet } from "react-helmet-async";
-import SearchItem from "@/features/Search/SearchItem";
+import SearchItem from "@/features/customer/Search/SearchItem";
 
 export default function Search() {
 	return (

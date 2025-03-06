@@ -1,17 +1,17 @@
-import { logout, setUserToken } from "@/store/slice/authSlice";
+// import { logout, setUserToken } from "@/store/slice/authSlice";
 import { RootState } from "@/store/store";
 import {
-	BaseQueryFn,
+	// BaseQueryFn,
 	createApi,
-	FetchArgs,
+	// FetchArgs,
 	fetchBaseQuery,
-	FetchBaseQueryError,
+	// FetchBaseQueryError,
 } from "@reduxjs/toolkit/query/react";
-import { Mutex } from "async-mutex";
-import toast from "react-hot-toast";
+// import { Mutex } from "async-mutex";
+// import toast from "react-hot-toast";
 
 // Create a mutex to prevent multiple refresh token requests
-const mutex = new Mutex();
+// const mutex = new Mutex();
 
 const baseQueryWithAuth = fetchBaseQuery({
 	baseUrl: import.meta.env.VITE_API_ENDPOINT + "/api/v1",
@@ -25,16 +25,12 @@ const baseQueryWithAuth = fetchBaseQuery({
 			// First try Redux state
 			const token = (getState() as RootState).auth.userToken;
 
-			console.log("first token", token);
-
 			if (token) {
 				headers.set("Authorization", `Bearer ${token}`);
 			}
 			// Then fall back to localStorage with your current key
 			else {
 				const storedToken = JSON.parse(window.localStorage.getItem("userToken")!) as string | null;
-
-				console.log("stored token", storedToken);
 
 				if (storedToken) {
 					headers.set("Authorization", `Bearer ${storedToken}`);

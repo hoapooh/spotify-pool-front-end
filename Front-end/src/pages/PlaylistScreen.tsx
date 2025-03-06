@@ -4,9 +4,9 @@ import { useParams } from "react-router-dom";
 import { useGetPlaylistQuery } from "@/services/apiPlaylist";
 import { setPlaylistDetail } from "@/store/slice/playlistSlice";
 
-import PlaylistHeader from "@/features/Playlist/components/PlaylistHeader";
-import PlaylistOption from "@/features/Playlist/components/PlaylistOption";
-import PlaylistTable from "@/features/Playlist/components/Table/PlaylistTable";
+import PlaylistHeader from "@/features/customer/Playlist/components/PlaylistHeader";
+import PlaylistOption from "@/features/customer/Playlist/components/PlaylistOption";
+import PlaylistTable from "@/features/customer/Playlist/components/Table/PlaylistTable";
 import { useAppDispatch } from "@/store/hooks";
 
 const PlaylistScreen = () => {

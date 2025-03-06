@@ -8,9 +8,12 @@ import SearchScreen from "@/pages/SearchScreen";
 import ProfileScreen from "@/pages/ProfileScreen";
 import PlaylistScreen from "@/pages/PlaylistScreen";
 import ConfirmEmailScreen from "@/pages/ConfirmEmailScreen";
-import DashboardLayout from "./pages/DashboardLayout";
-import Dashboard from "./features/dashboard/Dashboard";
-import DashboardUser from "./features/dashboard/DashboardUser";
+
+import AdminLayout from "./pages/AdminLayout";
+import LoginAdmin from "./features/admin/login/LoginAdmin";
+import Dashboard from "./features/admin/dashboard/Dashboard";
+import DashboardUser from "./features/admin/dashboard/DashboardUser";
+import ProtectedAdminRoute from "./features/admin/components/ProtectedAdminRoute";
 
 const router = createBrowserRouter([
 	{
@@ -35,6 +38,24 @@ const router = createBrowserRouter([
 		],
 	},
 	{
+		path: "/admin",
+		element: (
+			<ProtectedAdminRoute>
+				<AdminLayout />
+			</ProtectedAdminRoute>
+		),
+		children: [
+			{
+				path: "dashboard",
+				element: <Dashboard />,
+			},
+			{
+				path: "user",
+				element: <DashboardUser />,
+			},
+		],
+	},
+	{
 		path: "/login",
 		element: <LoginScreen />,
 	},
@@ -47,18 +68,8 @@ const router = createBrowserRouter([
 		element: <ConfirmEmailScreen />,
 	},
 	{
-		path: "/dashboard",
-		element: <DashboardLayout />,
-		children: [
-			{
-				index: true,
-				element: <Dashboard />,
-			},
-			{
-				path: "user",
-				element: <DashboardUser />,
-			},
-		],
+		path: "/admin/login",
+		element: <LoginAdmin />,
 	},
 ]);
 

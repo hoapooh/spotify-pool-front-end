@@ -13,12 +13,12 @@ import {
 import CustomTooltip from "@/components/CustomTooltip";
 
 import { Playlist } from "@/types";
-import AlertCreatePlaylist from "@/features/Layout/components/Modal/AlertCreatePlaylist";
+import AlertCreatePlaylist from "@/features/customer/Layout/components/Modal/AlertCreatePlaylist";
 import { setPlaylist } from "@/store/slice/playlistSlice";
-import SidebarFooter from "@/features/Layout/SidebarFooter";
+import SidebarFooter from "@/features/customer/Layout/SidebarFooter";
 import AddPlaylistModal from "./components/Modal/AddPlaylistModal";
 import { useGetAllPlaylistsQuery } from "@/services/apiPlaylist";
-import PlayListsSidebar from "@/features/Playlist/PlayListsSidebar";
+import PlayListsSidebar from "@/features/customer/Playlist/PlayListsSidebar";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 const LeftSideBar = () => {

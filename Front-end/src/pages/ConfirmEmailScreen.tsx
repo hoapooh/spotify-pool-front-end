@@ -1,7 +1,7 @@
-import ConfirmEmail from "@/features/ConfirmEmail/ConfirmEmail"
+import ConfirmEmail from "@/features/customer/ConfirmEmail/ConfirmEmail";
 
 const ConfirmEmailScreen = () => {
-	return <ConfirmEmail />
-}
+	return <ConfirmEmail />;
+};
 
-export default ConfirmEmailScreen
+export default ConfirmEmailScreen;

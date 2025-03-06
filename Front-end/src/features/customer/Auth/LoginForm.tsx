@@ -148,7 +148,7 @@ const LoginForm = () => {
 								name="username"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel> username</FormLabel>
+										<FormLabel>Username</FormLabel>
 										<FormControl>
 											<Input
 												className="border-[#727272] rounded-sm transition-all duration-300 hover:border-[#fff]"

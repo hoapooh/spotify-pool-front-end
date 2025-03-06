@@ -1,13 +1,13 @@
-import "@/styles/profile.scss"
-import { useState } from "react"
+import "@/styles/profile.scss";
+import { useState } from "react";
 
-import ProfileBulk from "@/features/Profile/ProfileBulk"
-import ProfileHeader from "@/features/Profile/ProfileHeader"
-import ProfileModal from "@/features/Profile/components/Modal/ProfileModal"
-import ProfileTopTracks from "@/features/Profile/ProfileTopTracks"
+import ProfileBulk from "@/features/customer/Profile/ProfileBulk";
+import ProfileHeader from "@/features/customer/Profile/ProfileHeader";
+import ProfileModal from "@/features/customer/Profile/components/Modal/ProfileModal";
+import ProfileTopTracks from "@/features/customer/Profile/ProfileTopTracks";
 
 export default function ProfileScreen() {
-	const [openProfileModal, setOpenProfileModal] = useState(false)
+	const [openProfileModal, setOpenProfileModal] = useState(false);
 
 	return (
 		<div>
@@ -19,5 +19,5 @@ export default function ProfileScreen() {
 
 			<ProfileTopTracks />
 		</div>
-	)
+	);
 }
