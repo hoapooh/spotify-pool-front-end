@@ -38,7 +38,7 @@ const MainHeader = () => {
 		dispatch(logout());
 		toast.success("Logout successful");
 	};
-
+	// border-l border-solid border-[#7c7c7c]
 	return (
 		<header className="w-full flex items-center relative bg-[rgba(0,0,0,.5)] p-2 -m-2 h-16">
 			<div className="w-full flex items-center justify-between pl-6 h-12">
@@ -75,7 +75,7 @@ const MainHeader = () => {
 							</CustomTooltip>
 						</div>
 
-						<form className="relative group w-full h-full" onClick={() => navigate("/search")}>
+						<div className="relative group w-full h-full" onClick={() => navigate("/search")}>
 							<CustomTooltip label="Search" side="bottom">
 								<Search className="text-[#b3b3b3] group-hover:text-white cursor-pointer size-6 absolute left-3 top-1/2 -translate-y-1/2" />
 							</CustomTooltip>
@@ -83,19 +83,18 @@ const MainHeader = () => {
 							<input
 								type="text"
 								placeholder="What do you want to play?"
-								className="bg-[#1f1f1f] text-[#b3b3b3] cursor-pointer p-3 pl-12 pr-16 rounded-full w-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 truncate min-h-12"
+								className="bg-[#1f1f1f] text-[#b3b3b3] cursor-pointer p-3 pl-12 pr-16 rounded-full w-full focus:outline-hidden focus:ring-2 focus:ring-primary focus:ring-opacity-50 truncate min-h-12"
 							/>
 
-							<div className="absolute right-3 top-1/2 -translate-y-1/2 pl-3 border-l bordeer-solid border-[#7c7c7c]">
-								<CustomTooltip label="Browse" side="bottom">
-									<Package
-										className={`text-[#b3b3b3] hover:text-white cursor-pointer size-6 ${
-											pathname === "/search" ? "text-white" : ""
-										}`}
-									/>
-								</CustomTooltip>
-							</div>
-						</form>
+							<div className="absolute border-l border-solid border-[#7c7c7c] h-6 right-12 top-1/2 -translate-y-1/2" />
+							<CustomTooltip label="Browse" side="bottom">
+								<Package
+									className={`text-[#b3b3b3] absolute right-3 top-1/2 -translate-y-1/2 hover:text-white cursor-pointer size-6 ${
+										pathname === "/search" ? "text-white" : ""
+									}`}
+								/>
+							</CustomTooltip>
+						</div>
 					</div>
 				</div>
 

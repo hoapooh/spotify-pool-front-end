@@ -25,7 +25,7 @@ const AlertCreatePlaylist = forwardRef<HTMLDivElement, AlertCreatePlaylistProps>
 							Not Now
 						</div>
 						<Link to={"/login"}>
-							<div className="flex-shrink-0 py-1 px-3 text-black bg-white hover:scale-105 text-sm transition-transform rounded-full font-bold cursor-pointer">
+							<div className="shrink-0 py-1 px-3 text-black bg-white hover:scale-105 text-sm transition-transform rounded-full font-bold cursor-pointer">
 								Log in
 							</div>
 						</Link>

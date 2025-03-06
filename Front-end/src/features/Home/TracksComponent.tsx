@@ -2,7 +2,7 @@ import { Track } from "@/types";
 import { Link } from "react-router-dom";
 import { Pause, Play } from "lucide-react";
 import { setCurrentTrack, togglePlay } from "@/store/slice/playerSlice";
-import { setTrack } from "@/store/slice/trackSlice";
+import { setTrack, setUnAuthenticatedTrack } from "@/store/slice/trackSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 interface TrackComponentProps {
@@ -20,6 +20,7 @@ const TracksComponent = ({ isAvatar, track, tracks, setOpen }: TrackComponentPro
 	const handleTogglePlay = (track: Track) => {
 		if (!isAuthenticated) {
 			setOpen(true);
+			dispatch(setUnAuthenticatedTrack(track));
 			return;
 		}
 
@@ -27,7 +28,7 @@ const TracksComponent = ({ isAvatar, track, tracks, setOpen }: TrackComponentPro
 			dispatch(togglePlay());
 			return;
 		}
-		dispatch(setTrack({ track }));
+		dispatch(setTrack(track));
 		dispatch(setCurrentTrack({ track, tracks: tracks || [] }));
 	};
 

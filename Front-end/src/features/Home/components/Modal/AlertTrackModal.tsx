@@ -18,7 +18,7 @@ interface AlertTrackModalProps {
 }
 
 const AlertTrackModal = ({ open, setOpen }: AlertTrackModalProps) => {
-	const { track } = useAppSelector((state) => state.track);
+	const { unAuthenticatedTrack } = useAppSelector((state) => state.track);
 	const [dominantColor, setDominantColor] = useState<string>("#282828");
 
 	// Utility function to convert RGB to HEX
@@ -27,10 +27,10 @@ const AlertTrackModal = ({ open, setOpen }: AlertTrackModalProps) => {
 	};
 
 	useEffect(() => {
-		if (track?.images[0]?.url) {
+		if (unAuthenticatedTrack?.images[0]?.url) {
 			const img = new Image();
 			img.crossOrigin = "Anonymous"; // Ensure CORS is handled
-			img.src = track.images[0].url;
+			img.src = unAuthenticatedTrack.images[0].url;
 			img.onload = () => {
 				const colorThief = new ColorThief();
 				const rgb = colorThief.getColor(img);
@@ -39,7 +39,7 @@ const AlertTrackModal = ({ open, setOpen }: AlertTrackModalProps) => {
 				setDominantColor(hex);
 			};
 		}
-	}, [track]);
+	}, [unAuthenticatedTrack]);
 
 	const gradientStyle =
 		dominantColor !== "#282828"
@@ -52,14 +52,14 @@ const AlertTrackModal = ({ open, setOpen }: AlertTrackModalProps) => {
 				<div style={{ background: gradientStyle }} className={`p-6 w-full h-full rounded-lg`}>
 					<DialogHeader>
 						<DialogTitle className={"hidden"}>Listen to this track</DialogTitle>
-						<DialogDescription className="hidden">{track?.name}</DialogDescription>
+						<DialogDescription className="hidden">{unAuthenticatedTrack?.name}</DialogDescription>
 					</DialogHeader>
 
 					<div className="flex flex-row items-center gap-10 p-10 pt-6">
 						<div className="w-2/5">
 							<img
-								src={track?.images[0].url}
-								alt={track?.name}
+								src={unAuthenticatedTrack?.images[0].url}
+								alt={unAuthenticatedTrack?.name}
 								className="w-full h-auto object-cover rounded-lg"
 							/>
 						</div>

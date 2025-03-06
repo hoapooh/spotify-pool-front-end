@@ -20,7 +20,7 @@ const Slider = React.forwardRef<
 		</SliderPrimitive.Track>
 		<SliderPrimitive.Thumb
 			className={cn(
-				"block h-4 w-4 rounded-full border border-background bg-foreground ring-offset-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+				"block h-4 w-4 rounded-full border border-background bg-foreground ring-offset-foreground transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
 				props.disabled && "hidden" // Hide thumb when slider is disabled
 			)}
 		/>

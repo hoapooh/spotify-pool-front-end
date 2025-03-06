@@ -111,7 +111,7 @@ const LoginForm = () => {
 	}
 
 	return (
-		<div className="min-h-full flex items-center justify-center bg-gradient-to-b from-zinc-700 from-0% to-black to-100%">
+		<div className="min-h-full flex items-center justify-center bg-linear-to-b from-zinc-700 from-0% to-black to-100%">
 			<div className="flex items-center justify-center w-full sm:w-2/3 lg:w-1/2 h-full m-0 mx-auto">
 				<div className="bg-[#121212] p-8 md:py-10 md:px-14 rounded-md">
 					<Helmet>
@@ -214,7 +214,7 @@ const LoginForm = () => {
 								)}
 							/>
 							<Button
-								className="rounded-full bg-[#1ed760] w-full hover:bg-[#1fdf64] font-bold"
+								className="rounded-full cursor-pointer bg-[#1ed760] w-full hover:bg-[#1fdf64] font-bold"
 								type="submit"
 							>
 								Log In
