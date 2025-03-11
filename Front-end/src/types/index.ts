@@ -5,9 +5,10 @@ export interface Images {
 }
 
 export interface Artists {
+	id: string;
 	name: string;
 	followers: number;
-	genreIds: string[];
+	// genreIds: string[];
 	images: Images[];
 }
 
@@ -15,11 +16,13 @@ export interface Track {
 	id: string;
 	name: string;
 	description: string;
+	lyrics: string;
 	previewURL: string;
+	addedTime: string;
 	duration: number;
 	durationFormated: string;
 	images: Images[];
-	artists?: Artists[] | [];
+	artists: Artists[];
 }
 
 export interface Playlist {
@@ -45,10 +48,11 @@ export interface TrackPlaylist {
 	id: string;
 	name: string;
 	description: string;
-	duration: number;
-	durationFormated: string;
+	lyrics: string;
 	previewURL: string;
 	addedTime: string;
+	duration: number;
+	durationFormated: string;
 	images: Images[];
 	artists: Artists[];
 }
@@ -76,4 +80,20 @@ export interface TopTracks {
 	topTrackId: string;
 	userId: string;
 	trackInfo: TopTracksDetail[];
+}
+
+export interface UserAccount {
+	userId: string; //
+	userName: string;
+	displayName: string; //
+	gender: string;
+	birthDate: string;
+	phoneNumber: string;
+	countryId: string;
+	followers: number;
+	email: string; //
+	status: "Inactive" | "Active" | "Banned" | ""; //
+	product: string;
+	roles: string[]; //
+	images: Images[];
 }

@@ -1,5 +1,5 @@
 import { Track } from "@/types";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Pause, Play } from "lucide-react";
 import { setCurrentTrack, togglePlay } from "@/store/slice/playerSlice";
 import { setTrack } from "@/store/slice/trackSlice";
@@ -17,9 +17,16 @@ const TracksComponent = ({ isAvatar, track, tracks, setOpen }: TrackComponentPro
 	const { isAuthenticated } = useAppSelector((state) => state.auth);
 	const { currentTrack, isPlaying, playlistId } = useAppSelector((state) => state.play);
 
-	const handleTogglePlay = (track: Track) => {
+	const navigate = useNavigate();
+
+	const handleTogglePlay = (e: React.MouseEvent) => {
+		// Stop event propagation to prevent Link navigation
+		e.preventDefault();
+		e.stopPropagation();
+
 		if (!isAuthenticated) {
 			setOpen(true);
+			dispatch(setTrack({ track }));
 			return;
 		}
 
@@ -32,7 +39,10 @@ const TracksComponent = ({ isAvatar, track, tracks, setOpen }: TrackComponentPro
 	};
 
 	return (
-		<div className="group inline-flex flex-col gap-x-2 p-3 rounded-sm hover:bg-[#1f1f1f] transition-all animate-in animate-out cursor-pointer">
+		<div
+			onClick={() => navigate(`/track/${track.id}`)}
+			className="group inline-flex flex-col gap-x-2 p-3 rounded-sm hover:bg-[#1f1f1f] transition-all animate-in animate-out cursor-pointer"
+		>
 			{/* ==== Track Image ==== */}
 			<div className="relative">
 				<div>
@@ -49,7 +59,7 @@ const TracksComponent = ({ isAvatar, track, tracks, setOpen }: TrackComponentPro
 							: "group-hover:opacity-100 group-hover:translate-y-0"
 					}`}
 				>
-					<button className="cursor-pointer group/play" onClick={() => handleTogglePlay(track)}>
+					<button className="cursor-pointer group/play" onClick={handleTogglePlay}>
 						<span className="bg-[#1ed760] group-hover/play:scale-105 group-hover/play:bg-[#3be477] rounded-full flex items-center justify-center w-12 h-12 text-black">
 							{currentTrack?.id === track.id && isPlaying && !playlistId ? (
 								<Pause className="w-6 fill-current" />
@@ -64,6 +74,7 @@ const TracksComponent = ({ isAvatar, track, tracks, setOpen }: TrackComponentPro
 			{/* ==== Artists name ==== */}
 			<div>
 				<div className="flex flex-col pt-1">
+					{/* // TODO: need to check for this error with the ascendant of <a> tag </a> */}
 					<Link to={"/"} className="font-medium line-clamp-2">
 						{track.name}
 					</Link>

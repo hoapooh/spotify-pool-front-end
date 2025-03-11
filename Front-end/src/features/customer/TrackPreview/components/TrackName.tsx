@@ -87,8 +87,6 @@ const TrackName = () => {
 				position: "top-right",
 				duration: 2000,
 			});
-
-			console.log(message);
 		});
 
 		connection.onclose((error) => {
@@ -103,7 +101,7 @@ const TrackName = () => {
 
 	const handleAddToFavoritesPlayList = () => {
 		const connection = new HubConnectionBuilder()
-			.withUrl(import.meta.env.VITE_SPOTIFYPOOL_HUB_PLAYLIST_URL, {
+			.withUrl(import.meta.env.VITE_SPOTIFYPOOL_HUB_ADD_TO_PLAYLIST_URL, {
 				// skipNegotiation: true,
 				transport: HttpTransportType.WebSockets, // INFO: set transport ở đây thànhh websockets để sử dụng skipNegotiation
 				// transport: HttpTransportType.LongPolling,
@@ -146,8 +144,6 @@ const TrackName = () => {
 				position: "top-right",
 				duration: 2000,
 			});
-
-			console.log(message);
 		});
 
 		connection.onclose((error) => {

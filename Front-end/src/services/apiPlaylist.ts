@@ -1,21 +1,22 @@
-import { apiSlice } from "@/apis/apiSlice.ts"
+import { apiSlice } from "@/apis/apiSlice.ts";
+import { PlaylistDetail } from "@/types";
 
 export const playlistApi = apiSlice.injectEndpoints({
 	endpoints: (build) => ({
 		getAllPlaylists: build.query({
 			query: () => ({
-				url: "/playlists",
+				url: "/customers/me/playlists",
 				method: "GET",
 			}),
 			transformResponse: (response) => response,
 			providesTags: ["Playlist"],
 		}),
-		getPlaylist: build.query({
-			query: (id) => ({
-				url: `/playlists/${id}`,
+		getPlaylist: build.query<PlaylistDetail, { playlistId: string }>({
+			query: ({ playlistId }) => ({
+				url: `/playlists/${playlistId}`,
 				method: "GET",
 			}),
-			transformResponse: (response) => response,
+			transformResponse: (response: PlaylistDetail) => response,
 			providesTags: ["Playlist"],
 		}),
 		createPlaylist: build.mutation({
@@ -41,7 +42,7 @@ export const playlistApi = apiSlice.injectEndpoints({
 			invalidatesTags: ["Playlist"],
 		}),
 	}),
-})
+});
 
 export const {
 	useGetAllPlaylistsQuery,
@@ -49,4 +50,4 @@ export const {
 	useCreatePlaylistMutation,
 	useAddTrackToPlaylistMutation,
 	useDeleteTrackFromPlaylistMutation,
-} = playlistApi
+} = playlistApi;

@@ -67,6 +67,7 @@ const LeftSideBar = () => {
 	}, [dispatch, playlistsData]);
 
 	const hasPlaylists = playlists && playlists.length > 0;
+
 	// Render logic based on playlists and authentication
 	const shouldShowLibraryBody = !isAuthenticated || (isAuthenticated && !hasPlaylists);
 	const shouldShowPlaylistsSidebar = isAuthenticated && hasPlaylists;
@@ -145,7 +146,7 @@ const LeftSideBar = () => {
 
 						{isLoadingPlaylist && (
 							<div className={"flex items-center justify-center"}>
-								<Loader className="size-12 animate-spin" />
+								<Loader className="size-12 animate-spin mx-auto my-12" />
 							</div>
 						)}
 
@@ -161,7 +162,13 @@ const LeftSideBar = () => {
 										</div>
 										<div className="library-body-btn">
 											<button
-												onClick={() => setOpenAlert(true)}
+												onClick={() => {
+													if (!isAuthenticated) {
+														setOpenAlert(true);
+														return;
+													}
+													setOpenAddPlaylistModal(true);
+												}}
 												className={`text-center align-middle transition-all bg-transparent border-0 rounded-full cursor-pointer touch-manipulation ${
 													openAlert ? "" : "hover:scale-105"
 												}`}

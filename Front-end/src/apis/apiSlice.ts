@@ -1,17 +1,26 @@
-// import { logout, setUserToken } from "@/store/slice/authSlice";
+import { logout, setUserData, setUserToken } from "@/store/slice/authSlice";
 import { RootState } from "@/store/store";
 import {
-	// BaseQueryFn,
+	BaseQueryFn,
 	createApi,
-	// FetchArgs,
+	FetchArgs,
 	fetchBaseQuery,
-	// FetchBaseQueryError,
+	FetchBaseQueryError,
 } from "@reduxjs/toolkit/query/react";
-// import { Mutex } from "async-mutex";
-// import toast from "react-hot-toast";
+import { Mutex } from "async-mutex";
+
+interface ReAuthResponse {
+	authenticatedUserInfoResponseModel: {
+		accessToken: string;
+		avatar: string[];
+		id: string;
+		name: string;
+		role: string[];
+	};
+}
 
 // Create a mutex to prevent multiple refresh token requests
-// const mutex = new Mutex();
+const mutex = new Mutex();
 
 const baseQueryWithAuth = fetchBaseQuery({
 	baseUrl: import.meta.env.VITE_API_ENDPOINT + "/api/v1",
@@ -43,14 +52,12 @@ const baseQueryWithAuth = fetchBaseQuery({
 });
 
 // Create a custom base query function with refresh token logic
-/* const baseQueryWithReAuth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
+const baseQueryWithReAuth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
 	args,
 	api,
 	extraOptions
 ) => {
 	let result = await baseQueryWithAuth(args, api, extraOptions);
-
-	console.log("First result", result);
 
 	if (result.error && (result.error.status === 401 || result.error.status === "FETCH_ERROR")) {
 		if (!mutex.isLocked()) {
@@ -58,25 +65,30 @@ const baseQueryWithAuth = fetchBaseQuery({
 
 			try {
 				// Try to get a new token
-				const refreshResult = await baseQueryWithAuth(
+				const refreshResult = (await baseQueryWithAuth(
 					{ url: "/authentication/refresh-token", method: "POST", credentials: "include" },
 					api,
 					extraOptions
-				);
-
-				console.log("Refresh result", refreshResult);
+				)) as { data: ReAuthResponse };
 
 				if (refreshResult.data) {
-					const data = refreshResult.data as { result: string };
-					api.dispatch(setUserToken(data.result));
+					const authenData = refreshResult.data.authenticatedUserInfoResponseModel;
+					api.dispatch(setUserToken(authenData.accessToken));
+					api.dispatch(
+						setUserData({
+							id: authenData.id,
+							name: authenData.name,
+							role: authenData.role,
+							avatar: authenData.avatar,
+						})
+					);
 
 					// Update localStorage
-					localStorage.setItem("userToken", JSON.stringify(data));
+					localStorage.setItem("userToken", JSON.stringify(authenData));
 
 					result = await baseQueryWithAuth(args, api, extraOptions);
 				} else {
 					api.dispatch(logout());
-					toast.error("Your session has expired. Please login again.");
 				}
 			} finally {
 				release();
@@ -89,11 +101,11 @@ const baseQueryWithAuth = fetchBaseQuery({
 		}
 	}
 	return result;
-}; */
+};
 
 export const apiSlice = createApi({
 	reducerPath: "api",
-	baseQuery: baseQueryWithAuth,
+	baseQuery: baseQueryWithReAuth,
 	tagTypes: ["Auth", "Playlist", "Track", "User"],
 	endpoints: () => ({}),
 	keepUnusedDataFor: 5,

@@ -135,8 +135,6 @@ const TrackPlay = () => {
 					position: "top-right",
 					duration: 2000,
 				});
-
-				console.log(message);
 			});
 
 			connection.onclose((error) => {
@@ -153,7 +151,7 @@ const TrackPlay = () => {
 				clearInterval(timerRef.current);
 			}
 		}
-	}, [playTime, currentTrack?.id, hasTriggeredStream]);
+	}, [playTime, currentTrack?.id, hasTriggeredStream, userToken]);
 
 	// Reset states when song changes
 	useEffect(() => {

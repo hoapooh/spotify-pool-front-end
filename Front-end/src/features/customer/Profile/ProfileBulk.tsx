@@ -3,46 +3,42 @@ import {
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import CustomTooltip from "@/components/CustomTooltip"
+} from "@/components/ui/dropdown-menu";
+import CustomTooltip from "@/components/CustomTooltip";
 
-import { User } from "@/types"
-import toast from "react-hot-toast"
-import { Copy, Ellipsis, Pen } from "lucide-react"
+import toast from "react-hot-toast";
+import { Copy, Ellipsis, Loader, Pen } from "lucide-react";
 
-import useGetUserId from "./hooks/useGetUserId"
-import { useGetUserProfileQuery } from "@/services/apiUser"
+import useGetUserId from "./hooks/useGetUserId";
+import { useGetUserAccountQuery } from "@/services/apiUser";
 
 interface ProfileBulkProps {
-	setOpen: (open: boolean) => void
+	setOpen: (open: boolean) => void;
 }
 
 const ProfileBulk = ({ setOpen }: ProfileBulkProps) => {
-	const userId = useGetUserId()
+	const userId = useGetUserId();
 
-	const { data: user, isLoading } = useGetUserProfileQuery(userId) as {
-		data: User
-		isLoading: boolean
-	}
+	const { data: user, isLoading } = useGetUserAccountQuery({ accountId: userId! });
 
-	if (isLoading) {
-		return null
+	if (isLoading || !user) {
+		return <Loader className={"animate-spin size-10"} />;
 	}
 
 	const handleCopy = () => {
-		navigator.clipboard.writeText(window.location.href)
+		navigator.clipboard.writeText(window.location.href);
 
 		toast.success("Link copied to clipboard", {
-			position: "bottom-right",
-		})
-	}
+			position: "bottom-center",
+		});
+	};
 
 	return (
 		<div className="w-full p-6">
 			{/* // TODO: Change the name of user here */}
 			<DropdownMenu>
 				<DropdownMenuTrigger>
-					<CustomTooltip label={`More options for ${user.name}`} side="right">
+					<CustomTooltip label={`More options for ${user.displayName}`} side="right">
 						<Ellipsis className="size-6 text-[#b3b3b3] hover:text-white cursor-pointer" />
 					</CustomTooltip>
 				</DropdownMenuTrigger>
@@ -70,7 +66,7 @@ const ProfileBulk = ({ setOpen }: ProfileBulkProps) => {
 				</DropdownMenuContent>
 			</DropdownMenu>
 		</div>
-	)
-}
+	);
+};
 
-export default ProfileBulk
+export default ProfileBulk;

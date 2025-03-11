@@ -1,4 +1,4 @@
-import { apiSlice } from "../apis/apiSlice"
+import { apiSlice } from "../apis/apiSlice";
 
 export const trackApi = apiSlice.injectEndpoints({
 	endpoints: (build) => ({
@@ -12,8 +12,8 @@ export const trackApi = apiSlice.injectEndpoints({
 			providesTags: ["Track"],
 		}),
 		getTracksById: build.query({
-			query: () => ({
-				url: "/tracks/:trackId",
+			query: (trackId: string) => ({
+				url: `/tracks/${trackId}`,
 				method: "GET",
 			}),
 			transformResponse: (response) => response,
@@ -36,11 +36,11 @@ export const trackApi = apiSlice.injectEndpoints({
 			providesTags: ["Track"],
 		}),
 	}),
-})
+});
 
 export const {
 	useGetTracksQuery,
 	useGetTracksByIdQuery,
 	useSearchTracksQuery,
 	useGetTopTracksQuery,
-} = trackApi
+} = trackApi;

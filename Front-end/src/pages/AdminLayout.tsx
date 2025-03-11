@@ -78,7 +78,7 @@ export default function AdminLayout() {
             </Breadcrumb> */}
 					</div>
 				</header>
-				<div className="flex flex-1 p-4 pt-0">
+				<div className="flex-1 p-4 pt-0">
 					{/* // NOTE: Some skeleton pre-built-in --> will not use but maybe leave for later investigate */}
 					{/* <div className="grid auto-rows-min gap-4 md:grid-cols-3">
 						<div className="aspect-video rounded-xl bg-muted/50" />

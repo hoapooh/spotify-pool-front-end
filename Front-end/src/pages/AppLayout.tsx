@@ -12,7 +12,8 @@ import NowPlayingView from "@/features/customer/Layout/NowPlayingView";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useGetCurrentUserQuery } from "@/services/apiAuth";
 import { setUserData } from "@/store/slice/authSlice";
-import { useAuthRedirect } from "@/hooks/use-auth-redirect";
+// import { useAuthRedirect } from "@/hooks/use-auth-redirect";
+import Loader from "@/components/ui/Loader";
 
 function AppLayout() {
 	const navigate = useNavigate();
@@ -48,15 +49,11 @@ function AppLayout() {
 		}
 	}, [isAuthenticated, existingUser, navigate]);
 
-	useAuthRedirect();
+	// useAuthRedirect();
 
 	// Show loading indicator while checking auth status
 	if (isChecking) {
-		return (
-			<div className="flex items-center justify-center h-screen">
-				{/* <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div> */}
-			</div>
-		);
+		return <Loader />;
 	}
 
 	return (

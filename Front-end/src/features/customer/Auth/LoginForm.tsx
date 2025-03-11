@@ -89,24 +89,25 @@ const LoginForm = () => {
 		})
 			.unwrap()
 			.then((data) => {
+				const { authenticatedResponseModel: authData, message } = data;
+
 				dispatch(
 					login({
-						userToken: data.authenticatedResponseModel.accessToken,
+						userToken: authData.accessToken,
 						userData: {
-							id: "6734c68cb92ba642dd3c8fd0",
-							role: ["Customer"],
-							name: "tudase",
-							avatar: [
-								"https://res.cloudinary.com/dofnn7sbx/image/upload/v1730097883/60d5dc467b950c5ccc8ced95_spotify-for-artists_on4me9.jpg",
-							],
+							id: authData.id,
+							role: authData.role,
+							name: authData.name,
+							avatar: authData.avatar,
 						},
 					})
 				);
 				navigate("/");
-				toast.success("Login successful");
+				toast.success(message);
 			})
 			.catch((error) => {
 				console.error(error);
+				toast.error("Login failed. Please try again.");
 			});
 	}
 

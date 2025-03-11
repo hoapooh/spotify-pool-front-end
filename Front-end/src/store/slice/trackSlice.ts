@@ -9,6 +9,11 @@ const initialState: TrackState = {
 	track: null,
 };
 
+const trackAvailable = localStorage.getItem("track-available");
+if (trackAvailable) {
+	initialState.track = JSON.parse(trackAvailable);
+}
+
 const trackSlice = createSlice({
 	name: "track",
 	initialState,

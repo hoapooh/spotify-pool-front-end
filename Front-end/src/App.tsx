@@ -14,6 +14,7 @@ import LoginAdmin from "./features/admin/login/LoginAdmin";
 import Dashboard from "./features/admin/dashboard/Dashboard";
 import DashboardUser from "./features/admin/dashboard/DashboardUser";
 import ProtectedAdminRoute from "./features/admin/components/ProtectedAdminRoute";
+import TrackDetailScreen from "./pages/TrackDetailScreen";
 
 const router = createBrowserRouter([
 	{
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
 			{
 				path: "/search",
 				element: <SearchScreen />,
+			},
+			{
+				path: "/track/:trackId",
+				element: <TrackDetailScreen />,
 			},
 			{
 				path: "/user/:userId",

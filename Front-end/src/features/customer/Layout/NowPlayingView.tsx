@@ -33,6 +33,7 @@ const NowPlayingView = () => {
 						</button>
 					</CustomTooltip>
 				</div>
+
 				{/* ==== Track thumbnail ==== */}
 				<div className="w-full rounded-lg bg-[#1f1f1f] p-4">
 					<img
@@ -54,6 +55,7 @@ const NowPlayingView = () => {
 						</CustomTooltip>
 					</div>
 				</div>
+
 				{/* ==== Artist ==== */}
 				<div className="w-full rounded-lg bg-[#1f1f1f] p-4">
 					<h3 className="font-semibold text-base">About the artist</h3>
@@ -68,28 +70,31 @@ const NowPlayingView = () => {
 						{currentTrack?.artists?.[0]?.name || "Artist name"}
 					</h3>
 				</div>
+
 				{/* ==== Next track in queue ==== */}
-				<div className="w-full rounded-lg bg-[#1f1f1f] p-4">
-					<div className="flex items-center justify-between">
-						<h3 className="font-semibold text-base">Next in queue</h3>
-						<button className="font-medium text-[#ffffffb2] hover:scale-105 hover:text-white hover:underline decoration-white">
-							Open queue
-						</button>
-					</div>
-					<div className="mt-3 rounded-lg hover:bg-white/10 p-2 transition-colors cursor-pointer">
-						<div className="flex items-center gap-3">
-							<img
-								src={`${nextTrack?.images?.[0]?.url || "https://placehold.co/48"}`}
-								alt="test image"
-								className="rounded-sm shrink-0 size-12 object-cover object-center"
-							/>
-							<div>
-								<h4 className="font-semibold text-base line-clamp-1">{nextTrack?.name}</h4>
-								<p className="text-[#b3b3b3] text-sm font-medium line-clamp-1">Artist name</p>
+				{nextTrack && (
+					<div className="w-full rounded-lg bg-[#1f1f1f] p-4">
+						<div className="flex items-center justify-between">
+							<h3 className="font-semibold text-base">Next in queue</h3>
+							<button className="font-medium text-[#ffffffb2] hover:scale-105 hover:text-white hover:underline decoration-white">
+								Open queue
+							</button>
+						</div>
+						<div className="mt-3 rounded-lg hover:bg-white/10 p-2 transition-colors cursor-pointer">
+							<div className="flex items-center gap-3">
+								<img
+									src={`${nextTrack?.images?.[0]?.url || "https://placehold.co/48"}`}
+									alt="test image"
+									className="rounded-sm shrink-0 size-12 object-cover object-center"
+								/>
+								<div>
+									<h4 className="font-semibold text-base line-clamp-1">{nextTrack?.name}</h4>
+									<p className="text-[#b3b3b3] text-sm font-medium line-clamp-1">Artist name</p>
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
+				)}
 			</div>
 		</div>
 	);

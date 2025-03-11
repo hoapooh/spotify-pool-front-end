@@ -13,7 +13,7 @@ const PlaylistScreen = () => {
 	const dispatch = useAppDispatch();
 	const { playlistId } = useParams();
 
-	const { data: playlist, isLoading } = useGetPlaylistQuery(playlistId) as {
+	const { data: playlist, isLoading } = useGetPlaylistQuery({ playlistId: playlistId! }) as {
 		data: PlaylistDetail;
 		isLoading: boolean;
 	};

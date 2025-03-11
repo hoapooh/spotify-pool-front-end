@@ -1,15 +1,22 @@
 import { apiSlice } from "../apis/apiSlice";
 
-/* interface LoginResponse {
-	message: string;
-	accessToken: string;
-} */
+interface RegisterRequest {
+	userName: string;
+	password: string;
+	confirmPassword: string;
+	displayName: string;
+	email: string;
+	phoneNumber: string;
+}
 
 interface LoginResponse {
 	message: string;
 	authenticatedResponseModel: {
 		accessToken: string;
-		refreshToken: string;
+		id: string;
+		role: string[];
+		name: string;
+		avatar: string[];
 	};
 }
 
@@ -32,7 +39,7 @@ export const authApi = apiSlice.injectEndpoints({
 			}),
 			invalidatesTags: ["Auth"],
 		}),
-		register: build.mutation({
+		register: build.mutation<{ message: string }, RegisterRequest>({
 			query: (data) => ({
 				url: "/authentication/register",
 				method: "POST",

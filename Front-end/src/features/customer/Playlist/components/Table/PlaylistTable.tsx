@@ -11,7 +11,7 @@ const PlaylistTable = () => {
 	const dispatch = useAppDispatch();
 	const [hoveredRow, setHoveredRow] = useState<number | null>(null);
 
-	const { currentTrack, isPlaying } = useAppSelector((state) => state.play);
+	const { currentTrack, isPlaying, playlistId } = useAppSelector((state) => state.play);
 	const { playlistDetail } = useAppSelector((state) => state.playlist);
 
 	// INFO: Play the track or pause/play if the current track is the same
@@ -19,7 +19,11 @@ const PlaylistTable = () => {
 		if (!playlistDetail) return; // INFO: Return if there is no playlist
 
 		// INFO: Pause/play if the current track is the same and is playing
-		if (currentTrack?.id === playlistDetail.tracks[index].id && isPlaying) {
+		if (
+			currentTrack?.id === playlistDetail.tracks[index].id &&
+			isPlaying &&
+			playlistId === playlistDetail.id
+		) {
 			dispatch(togglePlay());
 			return;
 		}
@@ -53,12 +57,12 @@ const PlaylistTable = () => {
 							<TableCell className="relative">
 								<div onClick={() => handlePlayTrack(index)}>
 									{hoveredRow === index ? (
-										isCurrentTrack && isPlaying ? (
+										isCurrentTrack && isPlaying && playlistId === playlistDetail.id ? (
 											<Pause className="size-4 fill-white stroke-white absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" />
 										) : (
 											<Play className="size-4 fill-white stroke-white absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" />
 										)
-									) : isCurrentTrack && isPlaying ? (
+									) : isCurrentTrack && isPlaying && playlistId === playlistDetail.id ? (
 										<img
 											src="https://open.spotifycdn.com/cdn/images/equaliser-animated-green.f5eb96f2.gif"
 											alt="music dancing"

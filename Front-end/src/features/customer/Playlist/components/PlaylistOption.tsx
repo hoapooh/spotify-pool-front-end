@@ -6,7 +6,7 @@ const PlaylistOption = () => {
 	const dispatch = useAppDispatch();
 
 	const { playlistDetail } = useAppSelector((state) => state.playlist);
-	const { currentTrack, isPlaying } = useAppSelector((state) => state.play);
+	const { currentTrack, isPlaying, playlistId } = useAppSelector((state) => state.play);
 
 	// INFO: Play the playlist from the first track or pause/play if the current track is in the playlist
 	const handlePlayPlaylist = () => {
@@ -15,7 +15,7 @@ const PlaylistOption = () => {
 		const iscurrentTrackInPlaylist = playlistDetail?.tracks.some(
 			(track) => track.id === currentTrack?.id
 		);
-		if (iscurrentTrackInPlaylist) {
+		if (iscurrentTrackInPlaylist && playlistId === playlistDetail.id) {
 			dispatch(togglePlay());
 			return;
 		}
@@ -31,7 +31,9 @@ const PlaylistOption = () => {
 		<div className="px-6 py-4">
 			<button className="cursor-pointer group" onClick={handlePlayPlaylist}>
 				<span className="bg-[#1ed760] group-hover:scale-105 group-hover:bg-[#3be477] rounded-full flex items-center justify-center w-14 h-14 text-black">
-					{isPlaying && playlistDetail?.tracks.some((track) => track.id === currentTrack?.id) ? (
+					{isPlaying &&
+					playlistDetail?.tracks.some((track) => track.id === currentTrack?.id) &&
+					playlistDetail.id === playlistId ? (
 						<Pause className="size-6 fill-current" />
 					) : (
 						<Play className="size-6 fill-current" />

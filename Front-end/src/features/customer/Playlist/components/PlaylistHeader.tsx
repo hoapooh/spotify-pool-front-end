@@ -1,10 +1,13 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAppSelector } from "@/store/hooks";
+import { Loader } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const PlaylistHeader = () => {
 	const { playlistDetail } = useAppSelector((state) => state.playlist);
 	const { isCollapsed } = useAppSelector((state) => state.ui);
+
+	if (!playlistDetail) return <Loader className="size-10" />;
 
 	return (
 		<div className="flex items-end gap-4 p-6">
@@ -16,10 +19,20 @@ const PlaylistHeader = () => {
 				/>
 			</div>
 
-			<div className="flex flex-col gap-3">
+			<div className="flex flex-col">
 				<div>Playlist</div>
 
-				<div className="text-8xl font-bold tracking-tighter">{playlistDetail?.title}</div>
+				<h1
+					className={`font-bold line-clamp-2 leading-normal ${
+						playlistDetail.title.length > 30
+							? "text-4xl"
+							: playlistDetail.title.length > 50
+							? "text-3xl"
+							: "text-5xl"
+					}`}
+				>
+					{playlistDetail.title}
+				</h1>
 
 				<div className="flex gap-1 items-center">
 					{/* AVATAR IMAGE */}
