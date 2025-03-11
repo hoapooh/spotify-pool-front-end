@@ -37,7 +37,7 @@ const formSchema = z.object({
 	password: z.string().min(8, {
 		message: "Please enter a valid password.",
 	}),
-	confirmedPassword: z.string().min(8, {
+	confirmPassword: z.string().min(8, {
 		message: "Please enter a valid password.",
 	}),
 	displayName: z.string().min(3, {
@@ -74,7 +74,7 @@ const SignupForm = () => {
 			email: "",
 			userName: "",
 			password: "",
-			confirmedPassword: "",
+			confirmPassword: "",
 			displayName: "",
 			phoneNumber: "",
 		},
@@ -231,7 +231,7 @@ const SignupForm = () => {
 							{/* CONFIRM PASSWORD */}
 							<FormField
 								control={form.control}
-								name="confirmedPassword"
+								name="confirmPassword"
 								render={({ field }) => (
 									<FormItem>
 										<FormLabel>Confirm password</FormLabel>
