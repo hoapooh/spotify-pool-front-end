@@ -34,6 +34,7 @@
     "clsx": "^2.1.1",
     "colorthief": "^2.6.0",
     "embla-carousel-react": "^8.1.8",
+    "hls.js": "^1.5.20",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.427.0",

@@ -19,4 +19,9 @@ export const tableHeaderData = [
 		title: "Duration",
 		classname: "min-w-[150px] text-right",
 	},
-]
+	{
+		key: "action",
+		title: "",
+		classname: "w-10",
+	},
+];

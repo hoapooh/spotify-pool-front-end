@@ -1,11 +1,19 @@
 import { useState } from "react";
-import { Pause, Play } from "lucide-react";
+import { CircleMinus, MoreHorizontal, Pause, Play } from "lucide-react";
 
 import PlaylistTableHeader from "./PlaylistTableHeader";
 import formatTimeMiliseconds from "@/utils/formatTimeMiliseconds";
 import { playPlaylist, togglePlay } from "@/store/slice/playerSlice";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import CustomTooltip from "@/components/CustomTooltip";
+import {
+	ContextMenu,
+	ContextMenuContent,
+	ContextMenuItem,
+	ContextMenuShortcut,
+	ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 
 const PlaylistTable = () => {
 	const dispatch = useAppDispatch();
@@ -37,6 +45,8 @@ const PlaylistTable = () => {
 		);
 	};
 
+	const handleDeleteTrackFromPlaylist = () => {};
+
 	if (!playlistDetail || playlistDetail.totalTracks === 0) return null;
 
 	return (
@@ -55,7 +65,7 @@ const PlaylistTable = () => {
 							onMouseLeave={() => setHoveredRow(null)}
 						>
 							<TableCell className="relative">
-								<div onClick={() => handlePlayTrack(index)}>
+								<div className="size-4" onClick={() => handlePlayTrack(index)}>
 									{hoveredRow === index ? (
 										isCurrentTrack && isPlaying && playlistId === playlistDetail.id ? (
 											<Pause className="size-4 fill-white stroke-white absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" />
@@ -89,6 +99,28 @@ const PlaylistTable = () => {
 							</TableCell>
 							<TableCell>{track.addedTime}</TableCell>
 							<TableCell className="text-right">{formatTimeMiliseconds(track.duration)}</TableCell>
+							<TableCell>
+								<ContextMenu>
+									<ContextMenuTrigger>
+										<CustomTooltip side="top" label={`More options for ${track.name}`} align="end">
+											<MoreHorizontal className="size-5 cursor-pointer" />
+										</CustomTooltip>
+									</ContextMenuTrigger>
+
+									<ContextMenuContent className="w-40 border-none">
+										<ContextMenuItem
+											className="text-lg"
+											inset
+											onSelect={handleDeleteTrackFromPlaylist}
+										>
+											Delete
+											<ContextMenuShortcut>
+												<CircleMinus />
+											</ContextMenuShortcut>
+										</ContextMenuItem>
+									</ContextMenuContent>
+								</ContextMenu>
+							</TableCell>
 						</TableRow>
 					</TableBody>
 				);
