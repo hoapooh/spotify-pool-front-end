@@ -12,9 +12,12 @@ import { Track } from "@/types";
 import { Copy, Ellipsis, Pause, Play, PlusCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
+import AlertTrackModal from "../../Home/components/Modal/AlertTrackModal";
+import { useState } from "react";
 
 const TrackOptions = ({ track }: { track: Track }) => {
 	const dispatch = useAppDispatch();
+	const [open, setOpen] = useState(false);
 	const { isAuthenticated } = useAppSelector((state) => state.auth);
 	const { currentTrack, isPlaying, playlistId } = useAppSelector((state) => state.play);
 
@@ -30,6 +33,12 @@ const TrackOptions = ({ track }: { track: Track }) => {
 		// Stop event propagation to prevent Link navigation
 		e.preventDefault();
 		e.stopPropagation();
+
+		if (!isAuthenticated) {
+			setOpen(true);
+			dispatch(setTrack({ track }));
+			return;
+		}
 
 		if (currentTrack?.id === track.id && !playlistId) {
 			dispatch(togglePlay());
@@ -54,9 +63,11 @@ const TrackOptions = ({ track }: { track: Track }) => {
 				</button>
 
 				{/* ==== Add to favorites song playlist ==== */}
-				<button className="cursor-pointer text-[#b3b3b3]">
-					<PlusCircle className="size-8 text-current hover:text-white hover:scale-105 transition-all duration-200" />
-				</button>
+				{isAuthenticated && (
+					<button className="cursor-pointer text-[#b3b3b3]">
+						<PlusCircle className="size-8 text-current hover:text-white hover:scale-105 transition-all duration-200" />
+					</button>
+				)}
 
 				{/* ==== More Options ==== */}
 				<DropdownMenu>
@@ -102,6 +113,8 @@ const TrackOptions = ({ track }: { track: Track }) => {
 					</div>
 				</div>
 			)}
+
+			<AlertTrackModal open={open} setOpen={setOpen} />
 		</>
 	);
 };

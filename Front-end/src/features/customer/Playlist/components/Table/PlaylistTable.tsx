@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CircleMinus, MoreHorizontal, Pause, Play } from "lucide-react";
+import { MoreHorizontal, Pause, Play } from "lucide-react";
 
 import PlaylistTableHeader from "./PlaylistTableHeader";
 import formatTimeMiliseconds from "@/utils/formatTimeMiliseconds";
@@ -7,13 +7,6 @@ import { playPlaylist, togglePlay } from "@/store/slice/playerSlice";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import CustomTooltip from "@/components/CustomTooltip";
-import {
-	ContextMenu,
-	ContextMenuContent,
-	ContextMenuItem,
-	ContextMenuShortcut,
-	ContextMenuTrigger,
-} from "@/components/ui/context-menu";
 
 const PlaylistTable = () => {
 	const dispatch = useAppDispatch();
@@ -100,26 +93,9 @@ const PlaylistTable = () => {
 							<TableCell>{track.addedTime}</TableCell>
 							<TableCell className="text-right">{formatTimeMiliseconds(track.duration)}</TableCell>
 							<TableCell>
-								<ContextMenu>
-									<ContextMenuTrigger>
-										<CustomTooltip side="top" label={`More options for ${track.name}`} align="end">
-											<MoreHorizontal className="size-5 cursor-pointer" />
-										</CustomTooltip>
-									</ContextMenuTrigger>
-
-									<ContextMenuContent className="w-40 border-none">
-										<ContextMenuItem
-											className="text-lg"
-											inset
-											onSelect={handleDeleteTrackFromPlaylist}
-										>
-											Delete
-											<ContextMenuShortcut>
-												<CircleMinus />
-											</ContextMenuShortcut>
-										</ContextMenuItem>
-									</ContextMenuContent>
-								</ContextMenu>
+								<CustomTooltip side="top" label={`More options for ${track.name}`} align="end">
+									<MoreHorizontal className="size-5 cursor-pointer" />
+								</CustomTooltip>
 							</TableCell>
 						</TableRow>
 					</TableBody>

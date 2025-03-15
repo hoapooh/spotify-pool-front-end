@@ -12,9 +12,19 @@ import CustomerDetailSheet from "./CustomerDetailSheet";
 import { MoreHorizontal } from "lucide-react";
 import { useState } from "react";
 import { UserAccount } from "@/types";
+import UserStatusModal from "./UserStatusModal";
 
 const ActionsCell = ({ user }: { user: UserAccount }) => {
 	const [isCustomerSheetOpen, setIsCustomerSheetOpen] = useState(false);
+	const [userStatusAction, setUserStatusAction] = useState<"ban" | "unban" | null>(null);
+
+	const handleOpenStatusModal = (action: "ban" | "unban") => {
+		setUserStatusAction(action);
+	};
+
+	const closeStatusModal = () => {
+		setUserStatusAction(null);
+	};
 
 	return (
 		<>
@@ -37,9 +47,18 @@ const ActionsCell = ({ user }: { user: UserAccount }) => {
 					</DropdownMenuItem>
 					<DropdownMenuSeparator />
 					<DropdownMenuItem onClick={() => setIsCustomerSheetOpen(true)}>
-						View customer
+						View user info
 					</DropdownMenuItem>
-					{/* <DropdownMenuItem>View payment details</DropdownMenuItem> */}
+					{/* Show Ban or Unban option based on user status */}
+					{user.status !== "Banned" ? (
+						<DropdownMenuItem onClick={() => handleOpenStatusModal("ban")}>
+							Ban account
+						</DropdownMenuItem>
+					) : (
+						<DropdownMenuItem onClick={() => handleOpenStatusModal("unban")}>
+							Unban account
+						</DropdownMenuItem>
+					)}
 				</DropdownMenuContent>
 			</DropdownMenu>
 
@@ -49,6 +68,16 @@ const ActionsCell = ({ user }: { user: UserAccount }) => {
 				isCustomerSheetOpen={isCustomerSheetOpen}
 				setIsCustomerSheetOpen={setIsCustomerSheetOpen}
 			/>
+
+			{/* ==== User Status Model (Ban/Unban) ==== */}
+			{userStatusAction && (
+				<UserStatusModal
+					userId={user.userId}
+					open={userStatusAction !== null}
+					setOpen={closeStatusModal}
+					action={userStatusAction}
+				/>
+			)}
 		</>
 	);
 };

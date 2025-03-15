@@ -11,18 +11,29 @@ export const playlistApi = apiSlice.injectEndpoints({
 			transformResponse: (response) => response,
 			providesTags: ["Playlist"],
 		}),
-		getPlaylist: build.query<PlaylistDetail, { playlistId: string }>({
-			query: ({ playlistId }) => ({
+		getPlaylist: build.query<
+			PlaylistDetail,
+			{ playlistId: string; sortByTrackId?: boolean; sortByTrackName?: boolean }
+		>({
+			query: ({ playlistId, sortByTrackId, sortByTrackName }) => ({
 				url: `/playlists/${playlistId}`,
 				method: "GET",
+				params: {
+					...(sortByTrackId !== undefined && { sortByTrackId }),
+					...(sortByTrackName !== undefined && { sortByTrackName }),
+				},
 			}),
 			transformResponse: (response: PlaylistDetail) => response,
 			providesTags: ["Playlist"],
 		}),
 		createPlaylist: build.mutation({
-			query: (playlistName) => ({
-				url: `/playlists/${playlistName}`,
+			query: (data) => ({
+				url: `/playlists`,
 				method: "POST",
+				body: data,
+				headers: {
+					Accept: "*/*",
+				},
 			}),
 			invalidatesTags: ["Playlist"],
 		}),

@@ -5,7 +5,8 @@ import {
 	ColumnFiltersState,
 	getFilteredRowModel,
 	useReactTable,
-	getPaginationRowModel,
+	PaginationState,
+	OnChangeFn,
 } from "@tanstack/react-table";
 
 import {
@@ -17,7 +18,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { DataTablePagination } from "./DataTablePagination";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
 	Select,
 	SelectContent,
@@ -25,69 +26,120 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { CirclePlus } from "lucide-react";
+import CreateUserModel from "./user/CreateUserModel";
+
+// Define the filter type to reuse
+type FilterState = {
+	userName: string;
+	email: string;
+	status: "" | "Active" | "Inactive" | "Banned";
+};
+
+interface TableMeta {
+	totalCount: number;
+}
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
 	data: TData[];
-	onStatusChange?: (status: "" | "Active" | "Inactive" | "Banned") => void;
-	currentStatus?: "" | "Active" | "Inactive" | "Banned";
+	totalUsers: number;
+	pageCount: number;
+	pagination: {
+		pageIndex: number;
+		pageSize: number;
+	};
+	setPagination: (pagination: PaginationState) => void;
+	filters?: FilterState;
+	setFilters?: Dispatch<SetStateAction<FilterState>>;
 }
 
 export function DataTable<TData, TValue>({
 	columns,
 	data,
-	onStatusChange,
-	currentStatus = "Active",
+	totalUsers,
+	pageCount,
+	pagination,
+	setPagination,
+	filters,
+	setFilters,
 }: DataTableProps<TData, TValue>) {
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+	const [openCreateModal, setOpenCreateModal] = useState(false);
+
+	const handleOpenCreateModal = () => {
+		setOpenCreateModal(true);
+	};
 
 	const table = useReactTable({
 		data,
 		columns,
+		pageCount: pageCount,
+		meta: {
+			totalCount: totalUsers,
+		} as TableMeta,
+		state: {
+			pagination,
+			columnFilters,
+		},
+		onPaginationChange: setPagination as OnChangeFn<PaginationState>,
 		getCoreRowModel: getCoreRowModel(),
-		getPaginationRowModel: getPaginationRowModel(),
 		onColumnFiltersChange: setColumnFilters,
 		getFilteredRowModel: getFilteredRowModel(),
-		state: { columnFilters },
-		// manualPagination: true, // TODO: need to change this after discuss with back-end
+		manualPagination: true,
 	});
 
 	useEffect(() => {
-		if (!onStatusChange) {
-			table.getColumn("status")?.setFilterValue(currentStatus);
+		if (!setFilters) {
+			table.getColumn("status")?.setFilterValue(filters?.status);
 		}
-	}, [table, currentStatus, onStatusChange]);
+	}, [table, setFilters, filters?.status]);
 
 	return (
 		<div>
-			{/* Status Filter */}
-			<div className="flex items-center mb-4">
-				<span className="text-sm font-medium mr-2">Status:</span>
-				<Select
-					value={currentStatus}
-					onValueChange={(value) => {
-						// Server-side filtering
-						if (onStatusChange) {
-							onStatusChange(
-								value === "All" ? "" : (value as "" | "Active" | "Inactive" | "Banned")
-							);
-						}
-						// Client-side filtering
-						else {
-							table.getColumn("status")?.setFilterValue(value === "All" ? "" : value);
-						}
-					}}
-				>
-					<SelectTrigger className="h-8 w-[180px]">
-						<SelectValue placeholder="Select status" />
-					</SelectTrigger>
-					<SelectContent>
-						<SelectItem value="All">All</SelectItem>
-						<SelectItem value="Active">Active</SelectItem>
-						<SelectItem value="Inactive">Inactive</SelectItem>
-						<SelectItem value="Banned">Banned</SelectItem>
-					</SelectContent>
-				</Select>
+			<div className="flex items-center mb-4 justify-between">
+				{/* Status Filter */}
+				<div className="flex items-center">
+					<span className="text-sm font-medium mr-2">Status:</span>
+					<Select
+						value={filters?.status}
+						onValueChange={(value) => {
+							// Server-side filtering
+							if (setFilters) {
+								setFilters((prevFilters) => ({
+									...prevFilters,
+									status: value === "All" ? "" : (value as "" | "Active" | "Inactive" | "Banned"),
+								}));
+
+								// Reset to first page when filter changes
+								setPagination({
+									...pagination,
+									pageIndex: 0,
+								});
+							}
+							// Client-side filtering
+							else {
+								table.getColumn("status")?.setFilterValue(value === "All" ? "" : value);
+							}
+						}}
+					>
+						<SelectTrigger className="h-8 w-[180px]">
+							<SelectValue placeholder="Select status" />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value="All">All</SelectItem>
+							<SelectItem value="Active">Active</SelectItem>
+							<SelectItem value="Inactive">Inactive</SelectItem>
+							<SelectItem value="Banned">Banned</SelectItem>
+						</SelectContent>
+					</Select>
+				</div>
+
+				<Button variant={"default"} size={"sm"} onClick={handleOpenCreateModal}>
+					<CirclePlus className="size-4 mr-2" />
+					Create User
+				</Button>
 			</div>
 
 			<div className="rounded-md border w-full h-fit">
@@ -131,6 +183,9 @@ export function DataTable<TData, TValue>({
 
 			{/* ==== Pagination ==== */}
 			<DataTablePagination table={table} />
+
+			{/* ==== Create User Modal ==== */}
+			<CreateUserModel open={openCreateModal} setOpen={setOpenCreateModal} />
 		</div>
 	);
 }

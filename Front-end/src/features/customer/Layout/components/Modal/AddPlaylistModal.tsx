@@ -19,15 +19,13 @@ import { z } from "zod";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { appendPlaylist } from "@/store/slice/playlistSlice";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { HttpTransportType, HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeftCircle, Pen } from "lucide-react";
+import { useCreatePlaylistMutation } from "@/services/apiPlaylist";
 
 interface AddPlaylistModalProps {
 	open: boolean;
@@ -41,8 +39,7 @@ const formSchema = z.object({
 });
 
 const AddPlaylistModal = ({ open, setOpen }: AddPlaylistModalProps) => {
-	const dispatch = useAppDispatch();
-	const { userToken } = useAppSelector((state) => state.auth);
+	const [createPlaylist, { isLoading }] = useCreatePlaylistMutation();
 
 	const fileInputRef = useRef<HTMLInputElement | null>(null);
 	const [previewUrl, setPreviewUrl] = useState<string>("https://placehold.co/200");
@@ -88,56 +85,28 @@ const AddPlaylistModal = ({ open, setOpen }: AddPlaylistModalProps) => {
 
 	const onSubmit = (values: z.infer<typeof formSchema>) => {
 		try {
-			const connection = new HubConnectionBuilder()
-				.withUrl(import.meta.env.VITE_SPOTIFYPOOL_HUB_ADD_TO_PLAYLIST_URL, {
-					transport: HttpTransportType.WebSockets, // INFO: set transport ở đây thànhh websockets để sử dụng skipNegotiation
-					accessTokenFactory: () => `${userToken}`,
-				})
-				.configureLogging(LogLevel.Debug) // INFO: set log level ở đây để tắt log -- khôngg cho phép log ra client
-				.build();
+			const formData = new FormData();
 
-			connection
-				.start()
+			formData.append("PlaylistName", values.playlistName);
+			formData.append("Description", values.description);
+			if (values.imageFile) {
+				formData.append("ImageFile", values.imageFile);
+			}
+
+			console.log(formData);
+
+			// NOTE: Normal api fetching way
+			createPlaylist(formData)
+				.unwrap()
 				.then(() => {
-					console.log("Connected to the hub");
-					connection.invoke("CreatePlaylistAsync", values);
-				})
-				.catch((err) => console.error(err));
+					toast.success("Added to Favorite Songs.", {
+						position: "bottom-center",
+					});
 
-			// NOTE: Khởi tạo 1 playlist mới
-			connection.on("CreatePlaylistSuccessfully", (newPlaylist) => {
-				console.log("New playlist created", newPlaylist);
-
-				dispatch(appendPlaylist(newPlaylist));
-				toast.success("Added to Favorite Songs.", {
-					position: "bottom-center",
+					form.reset();
+					setOpen(false);
+					setPreviewUrl("https://placehold.co/200");
 				});
-
-				connection
-					.stop()
-					.then(() => console.log("Connection stopped by client"))
-					.catch((err) => console.error("Error stopping connection", err));
-			});
-
-			// NOTE: Khi sự kiện này diễn ra signalR sẽ dừng hoạt động và trả về lỗi
-			connection.on("ReceiveException", (message) => {
-				toast.error(message, {
-					position: "top-right",
-					duration: 2000,
-				});
-			});
-
-			connection.onclose((error) => {
-				if (error) {
-					console.error("Connection closed due to error:", error);
-					toast.error("Connection lost. Please try again.");
-				} else {
-					console.log("Connection closed by the server.");
-				}
-			});
-
-			form.reset();
-			setOpen(false);
 		} catch (error) {
 			console.error(error);
 		}
@@ -176,7 +145,12 @@ const AddPlaylistModal = ({ open, setOpen }: AddPlaylistModalProps) => {
 								<FormItem>
 									<FormLabel className="text-xl capitalize">Name</FormLabel>
 									<FormControl>
-										<Input className="rounded-sm" placeholder="Add a name" {...field} />
+										<Input
+											disabled={isLoading}
+											className="rounded-sm"
+											placeholder="Add a name"
+											{...field}
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -191,6 +165,7 @@ const AddPlaylistModal = ({ open, setOpen }: AddPlaylistModalProps) => {
 									<FormLabel className="text-xl capitalize">Description</FormLabel>
 									<FormControl>
 										<Textarea
+											disabled={isLoading}
 											className="rounded-sm"
 											placeholder="Add an optional description"
 											{...field}
@@ -256,8 +231,9 @@ const AddPlaylistModal = ({ open, setOpen }: AddPlaylistModalProps) => {
 							<Button
 								className="rounded-full bg-[#fff] px-8 py-2 text-lg  hover:bg-[f0f0f0] hover:scale-105 font-bold"
 								type="submit"
+								disabled={isLoading}
 							>
-								Save
+								{isLoading ? "Creating..." : "Create"}
 							</Button>
 						</div>
 					</form>

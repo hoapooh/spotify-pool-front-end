@@ -53,23 +53,24 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
 		})
 			.unwrap()
 			.then((data) => {
+				const { authenticatedResponseModel: authData, message } = data;
+
 				dispatch(
 					login({
-						userToken: data.authenticatedResponseModel.accessToken,
+						userToken: authData.accessToken,
 						userData: {
-							id: "672c3adb710b9b46a4fd80e8",
-							role: ["Admin"],
-							name: "Tusngoo",
-							avatar: [
-								"https://res.cloudinary.com/dofnn7sbx/image/upload/v1730097883/60d5dc467b950c5ccc8ced95_spotify-for-artists_on4me9.jpg",
-							],
+							id: authData.id,
+							role: authData.role,
+							name: authData.name,
+							avatar: authData.avatar,
 						},
 					})
 				);
 				navigate("/admin/dashboard");
-				toast.success("Login successful");
+				toast.success(message);
 			})
 			.catch((error) => {
+				toast.error("Login failed. Please check your credentials.");
 				console.error(error);
 			});
 	}

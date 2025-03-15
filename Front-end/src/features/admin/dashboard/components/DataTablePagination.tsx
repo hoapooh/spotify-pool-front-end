@@ -10,23 +10,39 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 
+interface TableMeta {
+	totalCount: number;
+}
+
 interface DataTablePaginationProps<TData> {
 	table: Table<TData>;
 }
 
 export function DataTablePagination<TData>({ table }: DataTablePaginationProps<TData>) {
+	// Get the pagination state
+	const { pageIndex, pageSize } = table.getState().pagination;
+
+	// Get total count from the table meta with proper typing
+	const meta = table.options.meta as TableMeta | undefined;
+	const totalCount = meta?.totalCount || 0;
+
+	// Calculate the range of records being displayed
+	const startRecord = pageIndex * pageSize + 1;
+	const endRecord = Math.min((pageIndex + 1) * pageSize, totalCount);
+
+	// For empty data
+	const isDataEmpty = totalCount === 0;
+
 	return (
 		<div className="flex items-center justify-between px-2 mt-5">
 			<div className="flex-1 text-sm text-muted-foreground">
-				{/* {table.getFilteredSelectedRowModel().rows.length} of{" "}
-				{table.getFilteredRowModel().rows.length} row(s) selected. */}
-				Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}{" "}
-				to{" "}
-				{Math.min(
-					(table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
-					table.getFilteredRowModel().rows.length
-				)}{" "}
-				of {table.getFilteredRowModel().rows.length} entries
+				{isDataEmpty ? (
+					"No entries found"
+				) : (
+					<>
+						Showing {startRecord} to {endRecord} of {totalCount} entries
+					</>
+				)}
 			</div>
 			<div className="flex items-center space-x-6 lg:space-x-8">
 				<div className="flex items-center space-x-2">

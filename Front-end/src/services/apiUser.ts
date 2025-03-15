@@ -4,26 +4,36 @@ import { UserAccount } from "@/types";
 interface AccountParams {
 	pageNumber?: number;
 	pageSize?: number;
-	userName: string;
-	email: string;
-	displayName: boolean;
-	status: "Inactive" | "Active" | "Banned" | "";
+	userName?: string;
+	email?: string;
+	displayName?: boolean;
+	status?: "Inactive" | "Active" | "Banned" | "";
+}
+
+interface UserAccountResponse {
+	meta: {
+		pageNumber: number;
+		pageSize: number;
+		totalCount: number;
+		totalPages: number;
+	};
+	data: UserAccount[];
 }
 
 export const userApi = apiSlice.injectEndpoints({
 	endpoints: (build) => ({
-		getAllUserAccount: build.query<UserAccount[], AccountParams>({
+		getAllUserAccount: build.query<UserAccountResponse, AccountParams>({
 			query: (params) => ({
 				url: "/accounts",
 				method: "GET",
 				params,
 			}),
-			transformResponse: (response: UserAccount[]) => response,
+			transformResponse: (response: UserAccountResponse) => response,
 			providesTags: ["User"],
 		}),
 		getUserAccount: build.query<UserAccount, { accountId: string }>({
 			query: ({ accountId }) => ({
-				url: `accounts/${accountId}`,
+				url: `/accounts/${accountId}`,
 				method: "GET",
 			}),
 			transformResponse: (response: UserAccount) => response,
@@ -44,6 +54,22 @@ export const userApi = apiSlice.injectEndpoints({
 			}),
 			invalidatesTags: ["User"],
 		}),
+		createUser: build.mutation({
+			query: (body) => ({
+				url: "/accounts",
+				method: "POST",
+				body,
+			}),
+			invalidatesTags: ["User"],
+		}),
+		banUserAccount: build.mutation<{ message: string }, string>({
+			query: (accountId) => ({ url: `/accounts/${accountId}`, method: "DELETE" }),
+			invalidatesTags: ["User"],
+		}),
+		unbanUserAccount: build.mutation({
+			query: (accountId) => ({ url: `/accounts/${accountId}/unban`, method: "PATCH" }),
+			invalidatesTags: ["User"],
+		}),
 	}),
 });
 
@@ -52,4 +78,7 @@ export const {
 	useGetUserAccountQuery,
 	useGetUserProfileQuery,
 	useUpdateUserProfileMutation,
+	useCreateUserMutation,
+	useBanUserAccountMutation,
+	useUnbanUserAccountMutation,
 } = userApi;

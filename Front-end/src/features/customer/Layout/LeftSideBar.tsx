@@ -86,19 +86,26 @@ const LeftSideBar = () => {
 						{/*  ==== LIBRARY HEADER ==== */}
 						<div className="library-header">
 							<header className={"p-2 pl-4 pr-4"}>
-								<div className={`flex justify-between ${isCollapsed ? "flex-col" : "flex-row"}`}>
+								<div
+									className={`flex justify-between ${
+										isCollapsed ? "flex-col" : "flex-row"
+									} items-center`}
+								>
 									<CustomTooltip
 										label={`${isCollapsed ? "Expand" : "Collapse"} your library`}
 										side={isCollapsed ? "right" : "bottom"}
 									>
 										<div
-											className={`flex items-center p-1 pl-2 pr-2 gap-3 h-10 font-bold text-[#b3b3b3] hover:text-white transition-all cursor-pointer`}
+											className={`flex items-center shrink-0 ${
+												isCollapsed ? "mx-auto" : ""
+											} gap-3 h-10 font-bold text-[#b3b3b3] hover:text-white transition-all cursor-pointer`}
 											onClick={handleCollapse}
 										>
 											<SquareLibrary className="size-6" />
 											{!isCollapsed && <span>Your Library</span>}
 										</div>
 									</CustomTooltip>
+
 									<span className={"block relative"}>
 										<DropdownMenu>
 											<DropdownMenuTrigger>
