@@ -3,7 +3,7 @@ import { toggleCollapse } from "@/store/slice/uiSlice";
 
 import { useNavigate } from "react-router-dom";
 
-import { Folder, Loader, Music4, Plus, SquareLibrary } from "lucide-react";
+import { Loader, Music4, Plus, SquareLibrary } from "lucide-react";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -140,10 +140,10 @@ const LeftSideBar = () => {
 													<span>Create a new playlist</span>
 												</DropdownMenuItem>
 
-												<DropdownMenuItem>
+												{/* <DropdownMenuItem>
 													<Folder className="size-4" />
 													<span>Create a playlist folder</span>
-												</DropdownMenuItem>
+												</DropdownMenuItem> */}
 											</DropdownMenuContent>
 										</DropdownMenu>
 									</span>

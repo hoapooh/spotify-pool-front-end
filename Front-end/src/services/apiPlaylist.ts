@@ -45,10 +45,9 @@ export const playlistApi = apiSlice.injectEndpoints({
 			invalidatesTags: ["Playlist"],
 		}),
 		deleteTrackFromPlaylist: build.mutation({
-			query: ({ playlistID, trackID }) => ({
-				url: `/playlists/${playlistID}`,
+			query: ({ playlistId, trackId }) => ({
+				url: `/playlists/${playlistId}/tracks/${trackId}`,
 				method: "DELETE",
-				params: { trackID },
 			}),
 			invalidatesTags: ["Playlist"],
 		}),

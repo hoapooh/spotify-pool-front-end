@@ -19,6 +19,7 @@ import ProtectedArtistRoute from "./features/artist/components/ProtectedArtistRo
 import ArtistLayout from "./pages/ArtistLayout";
 import ArtistAlbum from "./pages/ArtistAlbum";
 import NotFoundPage from "./pages/NotFoundPage";
+import ArtistTrack from "./pages/ArtistTrack";
 
 const router = createBrowserRouter([
 	{
@@ -71,7 +72,13 @@ const router = createBrowserRouter([
 				<ArtistLayout />
 			</ProtectedArtistRoute>
 		),
-		children: [{ index: true, element: <ArtistAlbum /> }],
+		children: [
+			{ index: true, element: <ArtistAlbum /> },
+			{
+				path: "track",
+				element: <ArtistTrack />,
+			},
+		],
 	},
 	{
 		path: "/login",

@@ -24,6 +24,7 @@ interface CurrentUserResponse {
 	authenticatedUserInfoResponseModel: {
 		id: string;
 		role: string[];
+		artistId?: string;
 		name: string;
 		avatar: string[];
 	};
@@ -91,7 +92,7 @@ export const authApi = apiSlice.injectEndpoints({
 		}),
 		switchProfileToArtist: build.mutation<ProfileSwitchToArtistResponse, null>({
 			query: () => ({ url: "/customers/me/profile-switch", method: "POST" }),
-			invalidatesTags: ["Auth"],
+			invalidatesTags: ["Artist"],
 		}),
 	}),
 });

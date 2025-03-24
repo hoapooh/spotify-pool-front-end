@@ -17,6 +17,8 @@ const ProtectedArtistRoute = ({ children }: ProtectedArtistRouteProps) => {
 		skip: Boolean(userData?.id),
 	});
 
+	console.log(userData);
+
 	useEffect(() => {
 		// Create a timeout to prevent immediate redirects
 		const checkAuthTimeout = setTimeout(() => {

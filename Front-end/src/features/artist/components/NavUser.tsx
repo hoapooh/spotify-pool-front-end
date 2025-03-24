@@ -17,12 +17,13 @@ import {
 	useSidebar,
 } from "@/components/ui/sidebar";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { logout } from "@/store/slice/authSlice";
+import { clearAllState, login, logout } from "@/store/slice/authSlice";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useLogoutMutation } from "@/services/apiAuth";
 import { resetCollapse } from "@/store/slice/uiSlice";
 import { resetPlaylist } from "@/store/slice/playlistSlice";
+import { useSwitchProfileToUserMutation } from "@/services/apiArtist";
 
 export function NavUser() {
 	const navigate = useNavigate();
@@ -30,6 +31,7 @@ export function NavUser() {
 	const dispatch = useAppDispatch();
 	const { userData } = useAppSelector((state) => state.auth);
 	const [logoutUser] = useLogoutMutation();
+	const [switchProfileToUser] = useSwitchProfileToUserMutation();
 
 	const handleLogout = async () => {
 		await logoutUser(null)
@@ -40,6 +42,37 @@ export function NavUser() {
 				dispatch(logout());
 				navigate("/login");
 				toast.success("Logout successful");
+			});
+	};
+
+	const handleSwitchProfile = async () => {
+		await switchProfileToUser(null)
+			.unwrap()
+			.then(async (data) => {
+				const { authenticatedResponseModel: authData, message } = data;
+
+				// Use a single redux action to update state all at once
+				await dispatch(clearAllState());
+
+				// Update auth state with new user data
+				await dispatch(
+					login({
+						userToken: authData.accessToken,
+						userData: {
+							id: authData.id,
+							name: authData.name,
+							role: authData.role,
+							avatar: authData.avatar,
+						},
+					})
+				);
+
+				toast.success(message);
+
+				// Delay navigation slightly to ensure state is updated
+				setTimeout(() => {
+					navigate("/");
+				}, 100);
 			});
 	};
 
@@ -91,7 +124,7 @@ export function NavUser() {
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
 						<DropdownMenuGroup>
-							<DropdownMenuItem>
+							<DropdownMenuItem onSelect={handleSwitchProfile}>
 								<CircleUser />
 								Switch to User
 							</DropdownMenuItem>

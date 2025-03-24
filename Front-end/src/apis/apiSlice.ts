@@ -16,6 +16,7 @@ interface ReAuthResponse {
 		id: string;
 		name: string;
 		role: string[];
+		artistId?: string;
 	};
 }
 
@@ -80,6 +81,7 @@ const baseQueryWithReAuth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
 							name: authenData.name,
 							role: authenData.role,
 							avatar: authenData.avatar,
+							artistId: authenData.artistId,
 						})
 					);
 
@@ -106,7 +108,7 @@ const baseQueryWithReAuth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
 export const apiSlice = createApi({
 	reducerPath: "api",
 	baseQuery: baseQueryWithReAuth,
-	tagTypes: ["Auth", "Playlist", "Track", "User", "Album"],
+	tagTypes: ["Auth", "Playlist", "Track", "User", "Album", "Artist"],
 	endpoints: () => ({}),
 	keepUnusedDataFor: 5,
 	refetchOnMountOrArgChange: true,
