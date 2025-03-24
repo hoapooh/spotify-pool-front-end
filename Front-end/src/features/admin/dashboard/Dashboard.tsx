@@ -285,7 +285,10 @@ const Dashboard = () => {
 												label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
 											>
 												{genreData.map((entry, index) => (
-													<Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+													<Cell
+														key={`cell-${index}-${entry}`}
+														fill={COLORS[index % COLORS.length]}
+													/>
 												))}
 											</Pie>
 											<Tooltip formatter={(value) => `${value}%`} />
@@ -357,11 +360,13 @@ const Dashboard = () => {
 											</div>
 											<span
 												className={`px-2 py-0.5 rounded-md text-xs font-medium border ${
-													{
-														Active: "bg-emerald-900/30 text-emerald-400 border-emerald-600",
-														Inactive: "bg-amber-900/30 text-amber-400 border-amber-600",
-														Banned: "bg-rose-900/30 text-rose-400 border-rose-600",
-													}[user.status] || "bg-slate-800/50 text-slate-300 border-slate-600"
+													user.status === "Active"
+														? "bg-emerald-900/30 text-emerald-400 border-emerald-600"
+														: user.status === "Inactive"
+														? "bg-amber-900/30 text-amber-400 border-amber-600"
+														: user.status === "Banned"
+														? "bg-rose-900/30 text-rose-400 border-rose-600"
+														: "bg-slate-800/50 text-slate-300 border-slate-600"
 												}`}
 											>
 												{user.status}
