@@ -1,3 +1,4 @@
+import { Track } from "@/types";
 import { apiSlice } from "../apis/apiSlice";
 
 interface ProfileSwitchToUserResponse {
@@ -13,7 +14,7 @@ interface ProfileSwitchToUserResponse {
 
 interface ArtistTracksResponse {
 	message: string;
-	trackResponseModels: [];
+	trackResponseModels: Track[];
 }
 
 export const artistApi = apiSlice.injectEndpoints({

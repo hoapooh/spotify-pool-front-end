@@ -1,5 +1,5 @@
 import { apiSlice } from "@/apis/apiSlice";
-import { Album } from "@/types";
+import { Album, Artists, Images, Track } from "@/types";
 
 interface AlbumParams {
 	pageNumber?: number;
@@ -11,12 +11,35 @@ interface AlbumParams {
 	isSortByName?: boolean;
 }
 
-interface CreateAlbum {
+interface AlbumDetailInfo {
+	info: {
+		id: string;
+		name: string;
+		description: string;
+		images: Images[];
+		releaseInfo: {
+			releasedTime: string;
+			reason: number; // "NotAnnounced" | "Delayed" | "Canceled" | "Leaked" | "Official"
+		};
+	};
+	createdBy: {
+		id: string;
+		name: string;
+		followers: number;
+		images: Images[];
+	};
+	artistIds: string[];
+	artists: Artists[];
+	trackIds: string[];
+	tracks: Track[];
+}
+
+/* interface CreateAlbumRequest {
 	name: string;
 	description: string;
 	imageFile: File;
 	artistIds: string[];
-}
+} */
 
 export const albumApi = apiSlice.injectEndpoints({
 	endpoints: (build) => ({
@@ -29,19 +52,33 @@ export const albumApi = apiSlice.injectEndpoints({
 			transformResponse: (response: Album[]) => response,
 			providesTags: ["Album"],
 		}),
-		getAlbumDetail: build.query({
+		getAlbumDetail: build.query<AlbumDetailInfo, string>({
 			query: (albumId: string) => ({
 				url: `/albums/${albumId}`,
 				method: "GET",
 			}),
-			transformResponse: (response) => response,
+			transformResponse: (response: AlbumDetailInfo) => response,
 			providesTags: ["Album"],
 		}),
-		createAlbum: build.mutation<CreateAlbum, null>({
+		createAlbum: build.mutation<{ message: string }, FormData>({
 			query: (albumData) => ({
 				url: "/albums",
 				method: "POST",
 				body: albumData,
+				headers: {
+					Accept: "*/*",
+				},
+			}),
+			invalidatesTags: ["Album"],
+		}),
+		updateAlbum: build.mutation<null, { albumId: string; albumData: FormData }>({
+			query: ({ albumId, albumData }) => ({
+				url: `/albums/${albumId}`,
+				method: "PUT",
+				body: albumData,
+				headers: {
+					Accept: "*/*",
+				},
 			}),
 			invalidatesTags: ["Album"],
 		}),
@@ -59,5 +96,6 @@ export const {
 	useGetAlbumListQuery,
 	useGetAlbumDetailQuery,
 	useCreateAlbumMutation,
+	useUpdateAlbumMutation,
 	useDeleteAlbumMutation,
 } = albumApi;

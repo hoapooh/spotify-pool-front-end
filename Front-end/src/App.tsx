@@ -20,6 +20,7 @@ import ArtistLayout from "./pages/ArtistLayout";
 import ArtistAlbum from "./pages/ArtistAlbum";
 import NotFoundPage from "./pages/NotFoundPage";
 import ArtistTrack from "./pages/ArtistTrack";
+import ArtistAlbumDetail from "./pages/ArtistAlbumDetail";
 
 const router = createBrowserRouter([
 	{
@@ -77,6 +78,10 @@ const router = createBrowserRouter([
 			{
 				path: "track",
 				element: <ArtistTrack />,
+			},
+			{
+				path: "albums/:albumId",
+				element: <ArtistAlbumDetail />,
 			},
 		],
 	},

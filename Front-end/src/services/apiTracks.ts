@@ -43,6 +43,17 @@ export const trackApi = apiSlice.injectEndpoints({
 			transformResponse: (response) => response,
 			providesTags: ["Track"],
 		}),
+		uploadTrack: build.mutation<void, FormData>({
+			query: (formData) => ({
+				url: "/tracks/upload",
+				method: "POST",
+				body: formData,
+				headers: {
+					Accept: "*/*",
+				},
+			}),
+			invalidatesTags: ["Track"],
+		}),
 	}),
 });
 
@@ -51,4 +62,5 @@ export const {
 	useGetTracksByIdQuery,
 	useSearchTracksQuery,
 	useGetTopTracksQuery,
+	useUploadTrackMutation,
 } = trackApi;

@@ -101,9 +101,10 @@ export interface UserAccount {
 export interface Album {
 	id: string;
 	name: string;
+	description: string;
 	images: Images[];
 	releaseInfo: {
-		releasedTime: Date;
-		reason: string | null;
+		releasedTime: string;
+		reason: number;
 	};
 }
