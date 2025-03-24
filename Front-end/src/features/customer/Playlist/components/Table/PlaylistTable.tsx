@@ -7,6 +7,7 @@ import { playPlaylist, togglePlay } from "@/store/slice/playerSlice";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import CustomTooltip from "@/components/CustomTooltip";
+import { setTrack } from "@/store/slice/trackSlice";
 
 const PlaylistTable = () => {
 	const dispatch = useAppDispatch();
@@ -29,6 +30,7 @@ const PlaylistTable = () => {
 			return;
 		}
 
+		dispatch(setTrack({ track: playlistDetail.tracks[index] }));
 		dispatch(
 			playPlaylist({
 				tracks: playlistDetail.tracks,
@@ -38,7 +40,7 @@ const PlaylistTable = () => {
 		);
 	};
 
-	const handleDeleteTrackFromPlaylist = () => {};
+	// const handleDeleteTrackFromPlaylist = () => {};
 
 	if (!playlistDetail || playlistDetail.totalTracks === 0) return null;
 

@@ -39,8 +39,8 @@ const formSchema = z
 		displayName: z.string({ message: "Display name is required" }),
 		email: z.string({ message: "Email is required" }).email("Invalid email format"),
 		phoneNumber: z.string().optional(),
-		// roles: z.array(z.string()).min(1, "At least one role must be selected"),
-		roles: z.string().min(1, "At least one role must be selected"),
+		roles: z.array(z.string()).min(1, "At least one role must be selected"),
+		// roles: z.string().min(1, "At least one role must be selected"),
 		image: z.instanceof(File).nullable().default(null),
 	})
 	.superRefine((data) => {
@@ -80,7 +80,7 @@ const CreateUserModel = ({ open, setOpen }: CreateUserModelProps) => {
 			displayName: "",
 			email: "",
 			phoneNumber: "",
-			roles: "Customer",
+			roles: ["Customer"], // TODO: remember to change this to an array if error fixed
 			image: null,
 		},
 	});
@@ -95,11 +95,14 @@ const CreateUserModel = ({ open, setOpen }: CreateUserModelProps) => {
 			formData.append("DisplayName", values.displayName);
 			formData.append("Email", values.email);
 			formData.append("PhoneNumber", values.phoneNumber ?? "");
-			// formData.append("Roles", JSON.stringify(values.roles));
-			formData.append("Roles", values.roles);
 			if (values.image) {
 				formData.append("Image", values.image);
 			}
+
+			// NOTE: Append each role value individually because using Form Data
+			values.roles.forEach((role, index) => {
+				formData.append(`Roles[${index}]`, role);
+			});
 
 			createUser(formData)
 				.unwrap()
@@ -213,7 +216,7 @@ const CreateUserModel = ({ open, setOpen }: CreateUserModelProps) => {
 						</div>
 
 						{/* ROLES - Multiple selection using checkboxes */}
-						{/* <FormField
+						<FormField
 							control={form.control}
 							name="roles"
 							render={() => (
@@ -251,42 +254,6 @@ const CreateUserModel = ({ open, setOpen }: CreateUserModelProps) => {
 													);
 												}}
 											/>
-										))}
-									</div>
-									<FormMessage />
-								</FormItem>
-							)}
-						/> */}
-
-						{/* ROLES - Single selection using select */}
-						<FormField
-							control={form.control}
-							name="roles"
-							render={({ field }) => (
-								<FormItem>
-									<div className="mb-4">
-										<FormLabel className="text-base">Roles</FormLabel>
-									</div>
-									<div className="grid grid-cols-3 gap-2">
-										{availableRoles.map((role) => (
-											<FormItem
-												key={role.id}
-												className={`flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 ${
-													field.value === role.value ? "border-primary bg-primary/10" : ""
-												}`}
-											>
-												<FormControl>
-													<Checkbox
-														checked={field.value === role.value}
-														onCheckedChange={() => {
-															field.onChange(role.value);
-														}}
-													/>
-												</FormControl>
-												<div className="space-y-1 leading-none">
-													<FormLabel className="cursor-pointer">{role.label}</FormLabel>
-												</div>
-											</FormItem>
 										))}
 									</div>
 									<FormMessage />

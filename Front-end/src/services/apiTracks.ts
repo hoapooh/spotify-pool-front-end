@@ -1,14 +1,22 @@
+import { Track } from "@/types";
 import { apiSlice } from "../apis/apiSlice";
+
+interface TrackParams {
+	offset?: number;
+	limit?: number;
+	searchTerm?: string;
+	sortByName?: boolean;
+}
 
 export const trackApi = apiSlice.injectEndpoints({
 	endpoints: (build) => ({
-		getTracks: build.query({
+		getTracks: build.query<Track[], TrackParams>({
 			query: (params) => ({
 				url: "/tracks",
 				method: "GET",
 				params,
 			}),
-			transformResponse: (response) => response,
+			transformResponse: (response: Track[]) => response,
 			providesTags: ["Track"],
 		}),
 		getTracksById: build.query({

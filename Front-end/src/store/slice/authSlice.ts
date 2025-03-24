@@ -4,6 +4,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface UserData {
 	id: string;
 	name: string;
+	artistId?: string;
 	role: string[];
 	avatar: string[];
 }
@@ -52,9 +53,15 @@ const authSlice = createSlice({
 		setUserToken: (state, action: PayloadAction<string>) => {
 			state.userToken = action.payload;
 		},
+		clearAllState: (state) => {
+			state.userData = null;
+			state.userToken = null;
+			state.isAuthenticated = false;
+			localStorage.removeItem("userToken");
+		},
 	},
 });
 
 // Export actions and reducer
-export const { login, logout, setUserData, setUserToken } = authSlice.actions;
+export const { login, logout, setUserData, setUserToken, clearAllState } = authSlice.actions;
 export default authSlice.reducer;

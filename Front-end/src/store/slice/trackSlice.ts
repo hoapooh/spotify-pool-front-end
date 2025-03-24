@@ -23,8 +23,13 @@ const trackSlice = createSlice({
 
 			localStorage.setItem("track-available", JSON.stringify(action.payload.track));
 		},
+		removeTrack: (state) => {
+			state.track = null;
+
+			localStorage.removeItem("track-available");
+		},
 	},
 });
 
-export const { setTrack } = trackSlice.actions;
+export const { setTrack, removeTrack } = trackSlice.actions;
 export default trackSlice.reducer;

@@ -89,7 +89,7 @@ const LoginForm = () => {
 		})
 			.unwrap()
 			.then((data) => {
-				const { authenticatedResponseModel: authData, message } = data;
+				const { accessToken: authData, message } = data;
 
 				dispatch(
 					login({
@@ -261,7 +261,7 @@ const LoginForm = () => {
 								loginByGoogleMutation({ googleToken: credentialResponse.credential })
 									.unwrap()
 									.then((data) => {
-										dispatch(login({ userToken: data.token, userData: null }));
+										dispatch(login({ userToken: data.token.accessToken, userData: null }));
 										navigate("/");
 										toast.success("Login successful");
 									})

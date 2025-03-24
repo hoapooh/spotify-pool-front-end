@@ -10,7 +10,8 @@ import { Link } from "react-router-dom";
 
 // @ts-expect-error this package has no types
 import ColorThief from "colorthief";
-import { useAppSelector } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { removeTrack } from "@/store/slice/trackSlice";
 
 interface AlertTrackModalProps {
 	open: boolean;
@@ -18,6 +19,7 @@ interface AlertTrackModalProps {
 }
 
 const AlertTrackModal = ({ open, setOpen }: AlertTrackModalProps) => {
+	const dispatch = useAppDispatch();
 	const { track } = useAppSelector((state) => state.track);
 	const [dominantColor, setDominantColor] = useState<string>("#282828");
 
@@ -41,13 +43,21 @@ const AlertTrackModal = ({ open, setOpen }: AlertTrackModalProps) => {
 		}
 	}, [track]);
 
+	const handleOpenChange = (newOpenState: boolean) => {
+		if (!newOpenState) {
+			// If dialog is closing, dispatch removeTrack action
+			dispatch(removeTrack());
+		}
+		setOpen(newOpenState);
+	};
+
 	const gradientStyle =
 		dominantColor !== "#282828"
 			? `linear-gradient(to bottom, ${dominantColor}, #282828)`
 			: "#282828";
 
 	return (
-		<Dialog open={open} onOpenChange={setOpen}>
+		<Dialog open={open} onOpenChange={handleOpenChange}>
 			<DialogContent className={`sm:max-w-[810px] border-none p-0`}>
 				<div style={{ background: gradientStyle }} className={`p-6 w-full h-full rounded-lg`}>
 					<DialogHeader>
@@ -69,7 +79,7 @@ const AlertTrackModal = ({ open, setOpen }: AlertTrackModalProps) => {
 									Start listening with a free Spotify account
 								</h1>
 
-								<Link to="/signup">
+								<Link to="/signup" onClick={() => handleOpenChange(false)}>
 									<button className="text-black py-2 px-4 rounded-full font-bold text-sm bg-[#3be477] hover:scale-105 transition-all">
 										Sign up for free
 									</button>
@@ -79,6 +89,7 @@ const AlertTrackModal = ({ open, setOpen }: AlertTrackModalProps) => {
 									Already have an account?{" "}
 									<Link
 										to={"/login"}
+										onClick={() => handleOpenChange(false)}
 										className="underline decoration-white text-white font-bold hover:decoration-[#3be477] hover:text-[#3be477] transition-colors"
 									>
 										Log in

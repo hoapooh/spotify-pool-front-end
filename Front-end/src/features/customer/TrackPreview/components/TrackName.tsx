@@ -383,7 +383,6 @@ const TrackName = () => {
 							className="p-2 group"
 							onClick={() => {
 								if (isInFavorites) {
-									console.log("hmm");
 									// TODO: will try to add features that allow user to add to another playlist
 
 									return;

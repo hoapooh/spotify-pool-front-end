@@ -53,7 +53,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
 		})
 			.unwrap()
 			.then((data) => {
-				const { authenticatedResponseModel: authData, message } = data;
+				const { accessToken: authData, message } = data;
 
 				dispatch(
 					login({

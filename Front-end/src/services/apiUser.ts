@@ -48,9 +48,10 @@ export const userApi = apiSlice.injectEndpoints({
 			providesTags: ["User"],
 		}),
 		updateUserProfile: build.mutation({
-			query: () => ({
-				url: "/users/edit-profile",
-				method: "PUT",
+			query: (data) => ({
+				url: "/customers/me/profile",
+				method: "PATCH",
+				body: data,
 			}),
 			invalidatesTags: ["User"],
 		}),

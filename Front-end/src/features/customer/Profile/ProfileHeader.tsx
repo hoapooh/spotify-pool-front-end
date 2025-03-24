@@ -34,7 +34,7 @@ export default function ProfileHeader({ setOpen }: ProfileHeaderProps) {
 								/>
 
 								<AvatarFallback className="bg-green-500 text-sky-100 font-bold text-7xl">
-									{user.displayName.charAt(0).toUpperCase()}
+									{user.displayName?.charAt(0).toUpperCase() || "SP User"}
 								</AvatarFallback>
 							</Avatar>
 						</div>

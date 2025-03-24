@@ -16,10 +16,7 @@ function Home() {
 	const [loadingData, setLoadingData] = useState(false);
 
 	// NOTE: Hiện tại chỉ lấy 20 bài hát đầu tiên -- chỉ cần scroll xuống dưới sẽ tự động để load thêm bài hát
-	const { data = [], isLoading } = useGetTracksQuery({ offset, limit: 20 }) as {
-		data: Track[];
-		isLoading: boolean;
-	};
+	const { data = [], isLoading } = useGetTracksQuery({ offset, limit: 20 });
 
 	const [tracksData, setTracksData] = useState<Track[]>([]);
 

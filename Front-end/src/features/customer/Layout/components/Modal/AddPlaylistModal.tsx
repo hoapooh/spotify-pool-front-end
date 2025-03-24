@@ -93,8 +93,6 @@ const AddPlaylistModal = ({ open, setOpen }: AddPlaylistModalProps) => {
 				formData.append("ImageFile", values.imageFile);
 			}
 
-			console.log(formData);
-
 			// NOTE: Normal api fetching way
 			createPlaylist(formData)
 				.unwrap()

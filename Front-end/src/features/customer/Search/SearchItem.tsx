@@ -1,20 +1,73 @@
-import { useAppSelector } from "@/store/hooks";
+import { Track } from "@/types";
+import formatTimeMiliseconds from "@/utils/formatTimeMiliseconds";
+import { Link, useNavigate } from "react-router-dom";
 
-const SearchItem = () => {
-	const { isCollapsed } = useAppSelector((state) => state.ui);
+interface SearchItemProps {
+	track: Track;
+}
+
+const SearchItem = ({ track }: SearchItemProps) => {
+	const navigate = useNavigate();
+
+	const handleClick = () => {
+		navigate(`/track/${track.id}`);
+	};
+
+	// Render artists with Links
+	const renderArtists = () => {
+		if (!track.artists) return null;
+
+		// If artists is already a string, we need to treat it as a single artist
+		if (track.artists.length === 1) {
+			return (
+				<Link
+					to={`/user/${encodeURIComponent(track.artists[0].id)}`}
+					className="text-[#a9a9a9] hover:text-white hover:underline"
+					onClick={(e) => e.stopPropagation()}
+				>
+					{track.artists[0].name}
+				</Link>
+			);
+		}
+
+		// If artists is an array, map each one to a Link
+		if (Array.isArray(track.artists)) {
+			return track.artists.map((artist, index) => (
+				<span key={`${artist.id}-${index}`}>
+					<Link
+						to={`/user/${artist.id}`}
+						className="text-[#a9a9a9] hover:text-white hover:underline"
+						onClick={(e) => e.stopPropagation()}
+					>
+						{artist.name}
+					</Link>
+					{/* Add comma after each artist except the last one */}
+					{index < track.artists.length - 1 && ", "}
+				</span>
+			));
+		}
+
+		// Fallback for any other type
+		return String(track.artists);
+	};
 
 	return (
-		<div className={`${isCollapsed ? "min-h-52" : "min-h-40"} p-3`}>
-			<a href="#" className="relative">
-				<div className="w-full h-full relative overflow-hidden rounded-lg bg-[#006450]">
-					<img
-						src="https://i.scdn.co/image/ab6765630000ba8a81f07e1ead0317ee3c285bfa"
-						alt=""
-						className="absolute right-[-24px] object-cover object-center bottom-[-8px] rotate-[25deg] w-[45%] shadow-[0_2px_4px_0_rgba(0,0,0,0.2)] rounded-sm translate-[18%_-2%]"
-					/>
-					<span className="absolute p-4 text-2xl font-bold">Podcasts</span>
+		<div
+			onClick={handleClick}
+			className="cursor-pointer w-full p-2 flex items-center justify-between hover:bg-white/10 rounded-md"
+		>
+			<div className="flex items-center gap-x-4">
+				<img
+					src={track.images[2].url}
+					alt={track.name}
+					className="size-16 object-cover rounded-md"
+				/>
+				<div className="flex flex-col gap-y-1 line-clamp-1">
+					<div>{track.name}</div>
+					<div className="text-sm text-[#a9a9a9]">{renderArtists()}</div>
 				</div>
-			</a>
+			</div>
+			<div>{formatTimeMiliseconds(track.duration)}</div>
 		</div>
 	);
 };

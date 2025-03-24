@@ -11,7 +11,7 @@ interface RegisterRequest {
 
 interface LoginResponse {
 	message: string;
-	authenticatedResponseModel: {
+	accessToken: {
 		accessToken: string;
 		id: string;
 		role: string[];
@@ -26,6 +26,18 @@ interface CurrentUserResponse {
 		role: string[];
 		name: string;
 		avatar: string[];
+	};
+}
+
+interface ProfileSwitchToArtistResponse {
+	message: string;
+	authenticatedResponseModel: {
+		accessToken: string;
+		artistId: string;
+		avatar: string[];
+		id: string;
+		name: string;
+		role: string[];
 	};
 }
 
@@ -57,9 +69,9 @@ export const authApi = apiSlice.injectEndpoints({
 		}),
 		loginByGoogle: build.mutation({
 			query: (data) => ({
-				url: "/authentication/login-by-google",
+				url: "/authentication/google-login",
 				method: "POST",
-				body: JSON.stringify(data),
+				body: data,
 			}),
 			invalidatesTags: ["Auth"],
 		}),
@@ -70,6 +82,17 @@ export const authApi = apiSlice.injectEndpoints({
 			}),
 			providesTags: ["Auth"],
 		}),
+		logout: build.mutation<{ message: string }, null>({
+			query: () => ({
+				url: "/authentication/logout",
+				method: "POST",
+			}),
+			invalidatesTags: ["Auth"],
+		}),
+		switchProfileToArtist: build.mutation<ProfileSwitchToArtistResponse, null>({
+			query: () => ({ url: "/customers/me/profile-switch", method: "POST" }),
+			invalidatesTags: ["Auth"],
+		}),
 	}),
 });
 
@@ -79,4 +102,6 @@ export const {
 	useEmailConfirmMutation,
 	useLoginByGoogleMutation,
 	useGetCurrentUserQuery,
+	useLogoutMutation,
+	useSwitchProfileToArtistMutation,
 } = authApi;

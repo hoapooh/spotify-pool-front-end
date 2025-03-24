@@ -1,6 +1,7 @@
 import { Pause, Play } from "lucide-react";
 import { playPlaylist, togglePlay } from "@/store/slice/playerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { setTrack } from "@/store/slice/trackSlice";
 
 const PlaylistOption = () => {
 	const dispatch = useAppDispatch();
@@ -20,6 +21,7 @@ const PlaylistOption = () => {
 			return;
 		}
 
+		dispatch(setTrack({ track: playlistDetail.tracks[0] }));
 		dispatch(
 			playPlaylist({ tracks: playlistDetail.tracks, startIndex: 0, playlistId: playlistDetail.id })
 		);

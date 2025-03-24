@@ -15,6 +15,10 @@ import Dashboard from "./features/admin/dashboard/Dashboard";
 import DashboardUser from "./features/admin/dashboard/DashboardUser";
 import ProtectedAdminRoute from "./features/admin/components/ProtectedAdminRoute";
 import TrackDetailScreen from "./pages/TrackDetailScreen";
+import ProtectedArtistRoute from "./features/artist/components/ProtectedArtistRoute";
+import ArtistLayout from "./pages/ArtistLayout";
+import ArtistAlbum from "./pages/ArtistAlbum";
+import NotFoundPage from "./pages/NotFoundPage";
 
 const router = createBrowserRouter([
 	{
@@ -61,6 +65,15 @@ const router = createBrowserRouter([
 		],
 	},
 	{
+		path: "/artist",
+		element: (
+			<ProtectedArtistRoute>
+				<ArtistLayout />
+			</ProtectedArtistRoute>
+		),
+		children: [{ index: true, element: <ArtistAlbum /> }],
+	},
+	{
 		path: "/login",
 		element: <LoginScreen />,
 	},
@@ -75,6 +88,10 @@ const router = createBrowserRouter([
 	{
 		path: "/admin/login",
 		element: <LoginAdmin />,
+	},
+	{
+		path: "*",
+		element: <NotFoundPage />,
 	},
 ]);
 

@@ -97,3 +97,13 @@ export interface UserAccount {
 	roles: string[]; //
 	images: Images[];
 }
+
+export interface Album {
+	id: string;
+	name: string;
+	images: Images[];
+	releaseInfo: {
+		releasedTime: Date;
+		reason: string | null;
+	};
+}

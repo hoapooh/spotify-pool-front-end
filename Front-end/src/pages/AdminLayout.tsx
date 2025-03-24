@@ -1,6 +1,6 @@
 import { AppSidebar } from "@/features/admin/dashboard/AppSiderbar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { useGetCurrentUserQuery } from "@/services/apiAuth";
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -8,44 +8,47 @@ import { setUserData } from "@/store/slice/authSlice";
 
 export default function AdminLayout() {
 	const dispatch = useAppDispatch();
-	const navigate = useNavigate();
 	const { userData: existingUserData } = useAppSelector((state) => state.auth);
 	const [isLoading, setIsLoading] = useState(!existingUserData);
 
+	// Skip the query if we're on login page
+	const isLoginPage = window.location.pathname === "/admin/login";
+
+	// Only fetch user data if we don't have it and we're not on login page
 	const { data: userData } = useGetCurrentUserQuery(undefined, {
-		skip: window.location.pathname === "/admin/login",
+		skip: Boolean(existingUserData?.id) || isLoginPage,
 	});
 
 	useEffect(() => {
-		if (userData) {
+		// If we're on the login page, no need to show loader
+		if (isLoginPage) {
+			setIsLoading(false);
+			return;
+		}
+
+		// Case 1: We have existing user data
+		if (existingUserData?.id) {
+			// Short delay for UI transition
+			const timer = setTimeout(() => {
+				setIsLoading(false);
+			}, 500);
+
+			return () => clearTimeout(timer);
+		}
+
+		// Case 2: We have data from API
+		if (userData?.authenticatedUserInfoResponseModel) {
+			// Update redux with user data
 			dispatch(setUserData(userData.authenticatedUserInfoResponseModel));
 
-			// Verify admin role after data is loaded
-			if (!userData.authenticatedUserInfoResponseModel?.role?.includes("Admin")) {
-				navigate("/admin/login", { replace: true });
-			}
-
-			// Set a timeout to delay the transition
-			setTimeout(() => {
+			// Short delay for UI transition
+			const timer = setTimeout(() => {
 				setIsLoading(false);
-			}, 1500); // 1.5 seconds delay
-		}
-	}, [userData, dispatch, navigate]);
+			}, 500);
 
-	// Use existing data if available to prevent loading state
-	useEffect(() => {
-		if (existingUserData) {
-			// Still verify admin role
-			if (!existingUserData.role?.includes("Admin")) {
-				navigate("/admin/login", { replace: true });
-			}
-
-			// Set a timeout to delay the transition
-			setTimeout(() => {
-				setIsLoading(false);
-			}, 1500); // 1.5 seconds delay
+			return () => clearTimeout(timer);
 		}
-	}, [existingUserData, navigate]);
+	}, [userData, existingUserData, dispatch, isLoginPage]);
 
 	if (isLoading) {
 		return (
