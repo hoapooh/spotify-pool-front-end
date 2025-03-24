@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
 import Loader from "@/components/ui/Loader";
 import { useGetAlbumListQuery } from "@/services/apiAlbum";
-import { useAppSelector } from "@/store/hooks";
+// import { useAppSelector } from "@/store/hooks";
 import { PlusCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const ArtistAlbum = () => {
-	const { userData } = useAppSelector((state) => state.auth);
+	// const { userData } = useAppSelector((state) => state.auth);
 	const { data: albumList, isLoading } = useGetAlbumListQuery({
 		// artistIds: userData?.artistId ? ["67b5c8d0bd56a377220402b3"] : [],
 	});
