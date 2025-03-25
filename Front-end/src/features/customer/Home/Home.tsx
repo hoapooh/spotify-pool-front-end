@@ -1,21 +1,27 @@
 import { useCallback, useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 import Loader from "@/components/ui/Loader";
 import TracksHeader from "@/features/customer/Home/TracksHeader";
 import TracksComponent from "@/features/customer/Home/TracksComponent";
 
+import {
+	Carousel,
+	CarouselContent,
+	CarouselItem,
+	CarouselNext,
+	CarouselPrevious,
+} from "@/components/ui/carousel";
+
 import { Track } from "@/types";
 import { useGetTracksQuery } from "@/services/apiTracks";
 import AlertTrackModal from "./components/Modal/AlertTrackModal";
-import { Button } from "@/components/ui/button";
 
 function Home() {
 	const [open, setOpen] = useState(false);
 	const [offset, setOffset] = useState(1);
 	const [loadingData, setLoadingData] = useState(false);
-	const [scrollPosition, setScrollPosition] = useState(0);
 
 	// Getting just 15 tracks for the carousel
 	const { data: carouselData = [], isLoading: isCarouselLoading } = useGetTracksQuery({
@@ -46,22 +52,6 @@ function Home() {
 		}
 	}, []);
 
-	const handleCarouselScroll = (direction: "left" | "right") => {
-		const carousel = document.getElementById("tracks-carousel");
-		if (!carousel) return;
-
-		const scrollAmount = 320; // Adjust based on your card width + gap
-		const newPosition =
-			direction === "right" ? scrollPosition + scrollAmount : scrollPosition - scrollAmount;
-
-		carousel.scrollTo({
-			left: newPosition,
-			behavior: "smooth",
-		});
-
-		setScrollPosition(newPosition);
-	};
-
 	useEffect(() => {
 		const mainContent = document.getElementById("main-content") as HTMLElement;
 		mainContent.addEventListener("scroll", handleScroll);
@@ -81,42 +71,24 @@ function Home() {
 				<section className="pt-6">
 					<div className="flex flex-row flex-wrap pl-6 pr-6 gap-x-6 gap-y-8">
 						<section className="relative flex flex-col flex-1 max-w-full min-w-full">
-							<div className="flex justify-between items-center mb-4">
+							<div className="mb-4">
 								<TracksHeader linkUrl="/all-tracks">Popular tracks</TracksHeader>
-								<div className="flex gap-2">
-									<Button
-										variant={"default"}
-										size={"iconMd"}
-										onClick={() => handleCarouselScroll("left")}
-										// className="rounded-full bg-black/20 p-2 hover:bg-black/30"
-										aria-label="Scroll left"
-									>
-										<ChevronLeft className="w-5 h-5" />
-									</Button>
-									<Button
-										variant={"default"}
-										size={"iconMd"}
-										onClick={() => handleCarouselScroll("right")}
-										// className="rounded-full bg-black/20 p-2 hover:bg-black/30"
-										aria-label="Scroll right"
-									>
-										<ChevronRight className="w-5 h-5" />
-									</Button>
-								</div>
 							</div>
 
-							{/* Carousel for popular tracks */}
-							<div
-								id="tracks-carousel"
-								className="flex overflow-x-auto scrollbar-hide gap-4 pb-4"
-								style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-							>
-								{carouselData?.map((track) => (
-									<div key={track.id} className="flex-shrink-0 w-[200px]">
-										<TracksComponent track={track} tracks={carouselData} setOpen={setOpen} />
-									</div>
-								))}
-							</div>
+							{/* Shadcn Carousel for popular tracks */}
+							<Carousel className="w-full" opts={{ dragFree: true }}>
+								<CarouselContent className="-ml-1">
+									{carouselData?.map((track) => (
+										<CarouselItem key={track.id} className="pl-1 md:basis-1/4 lg:basis-1/6">
+											<div className="p-1">
+												<TracksComponent track={track} tracks={carouselData} setOpen={setOpen} />
+											</div>
+										</CarouselItem>
+									))}
+								</CarouselContent>
+								<CarouselPrevious size={"iconLarge"} className="left-0" />
+								<CarouselNext size={"iconLarge"} className="right-0" />
+							</Carousel>
 
 							<h2 className="text-2xl font-bold mt-8 mb-4">Recently Added</h2>
 							<div className="grid grid-cols-5 gap-2">

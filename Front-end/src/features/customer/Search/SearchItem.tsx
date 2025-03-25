@@ -21,7 +21,7 @@ const SearchItem = ({ track }: SearchItemProps) => {
 		if (track.artists.length === 1) {
 			return (
 				<Link
-					to={`/user/${encodeURIComponent(track.artists[0].id)}`}
+					to={`/artist/${encodeURIComponent(track.artists[0].id)}`}
 					className="text-[#a9a9a9] hover:text-white hover:underline"
 					onClick={(e) => e.stopPropagation()}
 				>
@@ -35,7 +35,7 @@ const SearchItem = ({ track }: SearchItemProps) => {
 			return track.artists.map((artist, index) => (
 				<span key={`${artist.id}-${index}`}>
 					<Link
-						to={`/user/${artist.id}`}
+						to={`/artist/${artist.id}`}
 						className="text-[#a9a9a9] hover:text-white hover:underline"
 						onClick={(e) => e.stopPropagation()}
 					>

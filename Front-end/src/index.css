@@ -179,3 +179,11 @@ body,
 .slider-root span[data-orientation="horizontal"]:first-child.h-2 {
 	height: 4px;
 }
+
+.bpFab {
+	bottom: 5.5rem !important;
+}
+
+.bpWebchat {
+	bottom: 10rem !important;
+}

@@ -71,13 +71,13 @@ export const albumApi = apiSlice.injectEndpoints({
 			}),
 			invalidatesTags: ["Album"],
 		}),
-		addTrackToAlbum: build.mutation<{ message: string }, { albumId: string; tracksId: FormData }>({
-			query: ({ albumId, tracksId }) => ({
+		addTrackToAlbum: build.mutation<{ message: string }, { albumId: string; trackIds: FormData }>({
+			query: ({ albumId, trackIds }) => ({
 				url: `/albums/${albumId}/tracks`,
 				method: "POST",
-				body: tracksId,
+				body: trackIds,
 			}),
-			invalidatesTags: ["Album"],
+			invalidatesTags: ["Album", "Track", "Artist"],
 		}),
 		updateAlbum: build.mutation<null, { albumId: string; albumData: FormData }>({
 			query: ({ albumId, albumData }) => ({

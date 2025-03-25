@@ -1,4 +1,4 @@
-import { Track } from "@/types";
+import { Images, Track } from "@/types";
 import { apiSlice } from "../apis/apiSlice";
 
 interface ProfileSwitchToUserResponse {
@@ -17,6 +17,17 @@ interface ArtistTracksResponse {
 	trackResponseModels: Track[];
 }
 
+interface ArtistProfileResponse {
+	message: string;
+	artistProfile: {
+		id: string;
+		name: string;
+		followers: number;
+		images: Images[];
+	};
+	artistTracks: Track[];
+}
+
 export const artistApi = apiSlice.injectEndpoints({
 	endpoints: (build) => ({
 		getArtistTracks: build.query<ArtistTracksResponse, { offset?: number; limit?: number }>({
@@ -27,6 +38,13 @@ export const artistApi = apiSlice.injectEndpoints({
 			}),
 			providesTags: ["Artist"],
 		}),
+		getArtistProfile: build.query<ArtistProfileResponse, { artistId: string }>({
+			query: ({ artistId }) => ({
+				url: `/artists/${artistId}/profile`,
+				method: "GET",
+			}),
+			providesTags: ["Artist"],
+		}),
 		switchProfileToUser: build.mutation<ProfileSwitchToUserResponse, null>({
 			query: () => ({
 				url: "/artists/me/profile-switch",
@@ -34,7 +52,23 @@ export const artistApi = apiSlice.injectEndpoints({
 			}),
 			invalidatesTags: ["Artist"],
 		}),
+		registerProfile: build.mutation<void, FormData>({
+			query: (formData) => ({
+				url: "/artists/register",
+				method: "POST",
+				body: formData,
+				headers: {
+					Accept: "*/*",
+				},
+			}),
+			invalidatesTags: ["Artist"],
+		}),
 	}),
 });
 
-export const { useGetArtistTracksQuery, useSwitchProfileToUserMutation } = artistApi;
+export const {
+	useGetArtistTracksQuery,
+	useGetArtistProfileQuery,
+	useSwitchProfileToUserMutation,
+	useRegisterProfileMutation,
+} = artistApi;

@@ -20,6 +20,7 @@ export interface Track {
 	previewURL: string;
 	addedTime?: string;
 	uploadDate?: string;
+	albumIds?: string[];
 	duration: number;
 	durationFormated: string;
 	images: Images[];

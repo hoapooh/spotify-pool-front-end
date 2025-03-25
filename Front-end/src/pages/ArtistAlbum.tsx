@@ -26,6 +26,8 @@ const ArtistAlbum = () => {
 	const { userData } = useAppSelector((state) => state.auth);
 	const { data: albumList, isLoading } = useGetAlbumListQuery({
 		artistIds: userData?.artistId ? [userData.artistId] : [],
+		pageSize: 10,
+		pageNumber: 1,
 	});
 	const [deleteAlbum, { isLoading: isDeleting }] = useDeleteAlbumMutation();
 
@@ -101,7 +103,7 @@ const ArtistAlbum = () => {
 			)}
 
 			{hasAlbums && (
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 justify-center gap-6">
 					{albumList.map((album) => (
 						<AlbumCard key={album.id} album={album} onEdit={handleEdit} onDelete={handleDelete} />
 					))}

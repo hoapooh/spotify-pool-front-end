@@ -8,7 +8,7 @@ interface TracksHeaderProps {
 
 const TracksHeader = ({ children, linkUrl }: TracksHeaderProps) => {
 	return (
-		<div className="area-headers flex items-end gap-x-3">
+		<div className="area-headers flex items-end justify-between">
 			<p className="text-2xl font-bold">{children}</p>
 			<Link to={linkUrl || "/"} className="hover:underline block text-[#b3b3b3]">
 				Show all
