@@ -344,7 +344,10 @@ const TrackName = () => {
 				{/* ==== NAME -- ARTIST ==== */}
 				<div className="mx-2 flex flex-col justify-center">
 					<div className="text-sm font-bold text-white">
-						<Link to={"/"} className="hover:underline hover:text-white line-clamp-1">
+						<Link
+							to={`track/${currentTrack?.id}`}
+							className="hover:underline hover:text-white line-clamp-1"
+						>
 							{currentTrack?.name || "Track Name"}
 						</Link>
 					</div>

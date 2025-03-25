@@ -1,25 +1,55 @@
 import { Loader, Pen } from "lucide-react";
+import { useEffect, useState } from "react";
 
-import useGetUserId from "./hooks/useGetUserId";
+// @ts-expect-error this package has no types
+import ColorThief from "colorthief";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useGetUserAccountQuery } from "@/services/apiUser";
+import NotFoundPage from "@/pages/NotFoundPage";
 
 interface ProfileHeaderProps {
 	setOpen: (open: boolean) => void;
+	userId: string;
 }
 
-export default function ProfileHeader({ setOpen }: ProfileHeaderProps) {
-	const userId = useGetUserId();
-
+export default function ProfileHeader({ setOpen, userId }: ProfileHeaderProps) {
 	const { data: user, isLoading } = useGetUserAccountQuery({ accountId: userId! });
+	const [dominantColor, setDominantColor] = useState<string>("#282828");
 
-	if (isLoading || !user) {
+	// Utility function to convert RGB to HEX
+	const rgbToHex = (r: number, g: number, b: number): string => {
+		return "#" + [r, g, b].map((x) => x.toString(16).padStart(2, "0")).join("");
+	};
+
+	useEffect(() => {
+		if (user?.images[0]?.url) {
+			const img = new Image();
+			img.crossOrigin = "Anonymous"; // Ensure CORS is handled
+			img.src = user.images[0].url;
+			img.onload = () => {
+				const colorThief = new ColorThief();
+				const rgb = colorThief.getColor(img);
+				const hex = rgbToHex(rgb[0], rgb[1], rgb[2]);
+
+				setDominantColor(hex);
+			};
+		}
+	}, [user]);
+
+	const gradientStyle =
+		dominantColor !== "#282828"
+			? `linear-gradient(to bottom, ${dominantColor}, #282828)`
+			: "#282828";
+
+	if (isLoading) {
 		return <Loader className={"animate-spin size-10"} />;
 	}
 
+	if (!user) return <NotFoundPage />;
+
 	return (
 		<div className="profile">
-			<div className="bg-style" style={{ backgroundColor: "rgb(136, 64, 56)" }}></div>
+			<div className="bg-style" style={{ background: gradientStyle }}></div>
 			<div className="bg-style gradient"></div>
 			<div className="info">
 				<div className="user-image">

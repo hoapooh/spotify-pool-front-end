@@ -21,7 +21,6 @@ import { Pen } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import useGetUserId from "../../hooks/useGetUserId";
 import { useGetUserAccountQuery, useUpdateUserProfileMutation } from "@/services/apiUser";
 import toast from "react-hot-toast";
 import { useAppSelector } from "@/store/hooks";
@@ -31,6 +30,7 @@ import { setUserData } from "@/store/slice/authSlice";
 interface ProfileModalProps {
 	open: boolean;
 	setOpen: (open: boolean) => void;
+	userId: string;
 }
 
 const formSchema = z.object({
@@ -40,9 +40,7 @@ const formSchema = z.object({
 
 const DEFAULT_IMAGE = "https://placehold.co/200";
 
-function ProfileModal({ open, setOpen }: ProfileModalProps) {
-	const userId = useGetUserId();
-
+function ProfileModal({ open, setOpen, userId }: ProfileModalProps) {
 	const dispatch = useDispatch();
 	const { userData: userAccount } = useAppSelector((state) => state.auth);
 	const { data: userData } = useGetUserAccountQuery({ accountId: userId! });

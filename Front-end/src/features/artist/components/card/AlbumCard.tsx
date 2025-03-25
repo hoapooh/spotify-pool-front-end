@@ -43,7 +43,7 @@ const AlbumCard = ({ album, onDelete, onEdit }: AlbumCardProps) => {
 	};
 
 	return (
-		<div className="bg-[#181818] rounded-lg shadow overflow-hidden hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 border border-gray-700 max-w-xs">
+		<div className="bg-[#181818] rounded-lg mx-auto shadow overflow-hidden hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 border border-gray-700 max-w-xs min-w-64">
 			<div className="relative group">
 				{/* Smaller, square image container */}
 				<div className="overflow-hidden h-48">

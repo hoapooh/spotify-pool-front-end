@@ -32,16 +32,13 @@ const AddToAlbumDialog = ({ open, setOpen, track }: AddToAlbumDialogProps) => {
 	// TODO: Need to check for albums inside this tracks
 	// Filter out albums that already contain this track
 	const availableAlbums =
-		albums?.filter((album) => !track.albums?.some((trackAlbum) => trackAlbum.id === album.id)) ||
-		[];
+		albums?.filter((album) => !track.albumIds?.some((id) => id === album.id)) || [];
 
 	useEffect(() => {
 		if (isSuccess) {
 			toast.success(`Added "${track.name}" to album successfully`);
-			setTimeout(() => {
-				setOpen(false);
-				reset();
-			}, 1500);
+			setOpen(false);
+			reset();
 		}
 	}, [isSuccess, setOpen, track.name, reset]);
 
@@ -49,12 +46,18 @@ const AddToAlbumDialog = ({ open, setOpen, track }: AddToAlbumDialogProps) => {
 		if (!selectedAlbumId) return;
 
 		const formData = new FormData();
-		formData.append("tracksId", track.id);
+		formData.append("trackIds", track.id);
+
+		// For multiple tracks
+		/* const formData = new FormData();
+		trackIds.forEach((id) => {
+			formData.append("trackIds", id);
+		}); */
 
 		try {
 			await addTrackToAlbum({
 				albumId: selectedAlbumId,
-				tracksId: formData,
+				trackIds: formData,
 			}).unwrap();
 		} catch (error) {
 			console.log(error);
@@ -103,10 +106,10 @@ const AddToAlbumDialog = ({ open, setOpen, track }: AddToAlbumDialogProps) => {
 								</div>
 								<div className="flex-1">
 									<div className="font-medium">{album.name}</div>
-									<div className="text-sm text-muted-foreground">
-										{/* // TODO: modify this too */}
+									{/* // TODO: modify this too */}
+									{/* <div className="text-sm text-muted-foreground">
 										{album.artists?.[0]?.name || "Your album"}
-									</div>
+									</div> */}
 								</div>
 								{selectedAlbumId === album.id && <Check className="h-5 w-5 text-primary" />}
 							</div>

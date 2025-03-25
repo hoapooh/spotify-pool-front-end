@@ -22,6 +22,7 @@ import NotFoundPage from "./pages/NotFoundPage";
 import ArtistTrack from "./pages/ArtistTrack";
 import ArtistAlbumDetail from "./pages/ArtistAlbumDetail";
 import ShowAllTracks from "./pages/ShowAllTracks";
+import ProfileArtistScreen from "./pages/ProfileArtistScreen";
 
 const router = createBrowserRouter([
 	{
@@ -50,6 +51,10 @@ const router = createBrowserRouter([
 			{
 				path: "/all-tracks",
 				element: <ShowAllTracks />,
+			},
+			{
+				path: "/artist/:artistId",
+				element: <ProfileArtistScreen />,
 			},
 		],
 	},

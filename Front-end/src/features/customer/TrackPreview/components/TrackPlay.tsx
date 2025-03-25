@@ -1,13 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-
 import { Pause, Play, Repeat2, Shuffle, SkipBack, SkipForward } from "lucide-react";
-
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import CustomTooltip from "@/components/CustomTooltip";
-
 import { HttpTransportType, HubConnectionBuilder } from "@microsoft/signalr";
-
 import { playNext, playPrevious, togglePlay, updateCurrentTime } from "@/store/slice/playerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import toast from "react-hot-toast";
@@ -20,20 +16,15 @@ const formatTime = (seconds: number) => {
 
 const TrackPlay = () => {
 	const dispatch = useAppDispatch();
-
 	const {
 		currentTrack,
 		isPlaying,
 		currentTime: savedCurrentTime,
 	} = useAppSelector((state) => state.play);
-
 	const { userToken } = useAppSelector((state) => state.auth);
 
-	// const [volume, setVolume] = useState(20);
 	const [duration, setDuration] = useState(0);
 	const [currentTime, setCurrentTime] = useState(savedCurrentTime);
-
-	// CHECKPOINT: TIMER LOGIC SIGNALR
 	const [playTime, setPlayTime] = useState(0);
 	const [playCurrentTime, setPlayCurrentTime] = useState(savedCurrentTime || 0);
 	const [hasTriggeredStream, setHasTriggeredStream] = useState(false);
@@ -41,42 +32,117 @@ const TrackPlay = () => {
 	const timerRef = useRef<NodeJS.Timeout | null>(null);
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const timerCurrentTrackRef = useRef<NodeJS.Timeout | null>(null);
+	const audioCheckInterval = useRef<NodeJS.Timeout | null>(null);
 
+	// Enhanced audio element finder with retry mechanism
 	useEffect(() => {
-		audioRef.current = document.querySelector("audio");
+		// Clear any existing interval
+		if (audioCheckInterval.current) {
+			clearInterval(audioCheckInterval.current);
+		}
 
+		let attempts = 0;
+		const maxAttempts = 10;
+
+		// Set up interval to check for audio element
+		audioCheckInterval.current = setInterval(() => {
+			const audio = document.querySelector("audio");
+			attempts++;
+
+			if (audio) {
+				// Found the audio element
+				audioRef.current = audio;
+				clearInterval(audioCheckInterval.current!);
+
+				// Set up event listeners after finding the element
+				setupAudioListeners();
+			} else if (attempts >= maxAttempts) {
+				// Give up after max attempts
+				console.error("Failed to find audio element after", maxAttempts, "attempts");
+				clearInterval(audioCheckInterval.current!);
+			}
+		}, 200); // Check every 200ms
+
+		return () => {
+			if (audioCheckInterval.current) {
+				clearInterval(audioCheckInterval.current);
+			}
+		};
+	}, [currentTrack?.id]); // Re-run when track changes
+
+	// Function to set up all audio listeners
+	const setupAudioListeners = () => {
 		const audio = audioRef.current;
 		if (!audio) return;
 
-		audio.currentTime = savedCurrentTime;
+		// Set initial time if we have saved state
+		if (savedCurrentTime > 0) {
+			audio.currentTime = savedCurrentTime;
+		}
 
-		const updateTime = () => setCurrentTime(audio.currentTime);
+		// Create event listeners
+		const updateTime = () => {
+			setCurrentTime(audio.currentTime);
+		};
 
-		const updateDuration = () => setDuration(audio.duration);
+		const updateDuration = () => {
+			if (!isNaN(audio.duration) && audio.duration > 0) {
+				setDuration(audio.duration);
+				console.log("Duration set:", audio.duration);
+			}
+		};
 
-		audio.addEventListener("timeupdate", updateTime);
-		audio.addEventListener("loadedmetadata", updateDuration);
+		const handleCanPlay = () => {
+			if (!isNaN(audio.duration) && audio.duration > 0) {
+				setDuration(audio.duration);
+				console.log("Can play, duration:", audio.duration);
+			}
+		};
+
+		const handleMetadata = () => {
+			if (!isNaN(audio.duration) && audio.duration > 0) {
+				setDuration(audio.duration);
+				console.log("Metadata loaded, duration:", audio.duration);
+			}
+		};
 
 		const handleEnded = () => {
 			dispatch(togglePlay());
 		};
 
+		// Listen for all relevant events
+		audio.addEventListener("timeupdate", updateTime);
+		audio.addEventListener("durationchange", updateDuration);
+		audio.addEventListener("loadedmetadata", handleMetadata);
+		audio.addEventListener("canplay", handleCanPlay);
 		audio.addEventListener("ended", handleEnded);
 
+		// If audio is already loaded but event didn't fire
+		if (!isNaN(audio.duration) && audio.duration > 0) {
+			setDuration(audio.duration);
+			console.log("Initial duration check:", audio.duration);
+		}
+
+		// Force immediate duration check for HLS or other streaming formats
+		// Sometimes this helps when events don't fire
+		setTimeout(() => {
+			if (audio && !isNaN(audio.duration) && audio.duration > 0) {
+				setDuration(audio.duration);
+				console.log("Delayed duration check:", audio.duration);
+			}
+		}, 500);
+
 		return () => {
+			// Clean up listeners if component unmounts
 			audio.removeEventListener("timeupdate", updateTime);
-			audio.removeEventListener("loadedmetadata", updateDuration);
+			audio.removeEventListener("durationchange", updateDuration);
+			audio.removeEventListener("loadedmetadata", handleMetadata);
+			audio.removeEventListener("canplay", handleCanPlay);
 			audio.removeEventListener("ended", handleEnded);
 		};
-	}, [currentTrack, dispatch, savedCurrentTime]);
+	};
 
-	// Effect for setting currentTime
-	// useEffect(() => {
-	// 	if (audioRef.current && audioRef.current.currentTime !== savedCurrentTime) {
-	// 		audioRef.current.currentTime = savedCurrentTime
-	// 	}
-	// }, [savedCurrentTime])
-
+	// Effect for updating current time in Redux store
 	useEffect(() => {
 		if (isPlaying) {
 			timerCurrentTrackRef.current = setInterval(() => {
@@ -109,13 +175,11 @@ const TrackPlay = () => {
 
 	// Effect for SignalR connection after 10 seconds
 	useEffect(() => {
-		if (playTime >= 10 && !hasTriggeredStream) {
+		if (playTime >= 10 && !hasTriggeredStream && currentTrack?.id) {
 			const connection = new HubConnectionBuilder()
 				.withUrl(import.meta.env.VITE_SPOTIFYPOOL_HUB_COUNT_STREAM_URL, {
-					// skipNegotiation: true,
-					transport: HttpTransportType.WebSockets, // INFO: set this to websockets to use skipNegotiation
+					transport: HttpTransportType.WebSockets,
 					accessTokenFactory: () => `${userToken}`,
-					// transport: HttpTransportType.LongPolling,
 				})
 				.withAutomaticReconnect()
 				.build();
@@ -124,12 +188,11 @@ const TrackPlay = () => {
 				.start()
 				.then(() => {
 					console.log("Connected to the hub");
-					connection.invoke("UpdateStreamCountAsync", currentTrack?.id);
-					setHasTriggeredStream(true); // Prevent multiple triggers
+					connection.invoke("UpdateStreamCountAsync", currentTrack.id);
+					setHasTriggeredStream(true);
 				})
 				.catch((err) => console.error(err));
 
-			// NOTE: Khi sự kiện này diễn ra signalR sẽ dừng hoạt động và trả về lỗi
 			connection.on("ReceiveException", (message) => {
 				toast.error(message, {
 					position: "top-right",
@@ -146,7 +209,6 @@ const TrackPlay = () => {
 				}
 			});
 
-			// Clear timer after triggering
 			if (timerRef.current) {
 				clearInterval(timerRef.current);
 			}

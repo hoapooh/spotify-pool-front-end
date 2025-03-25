@@ -8,17 +8,14 @@ import CustomTooltip from "@/components/CustomTooltip";
 
 import toast from "react-hot-toast";
 import { Copy, Ellipsis, Loader, Pen } from "lucide-react";
-
-import useGetUserId from "./hooks/useGetUserId";
 import { useGetUserAccountQuery } from "@/services/apiUser";
 
 interface ProfileBulkProps {
 	setOpen: (open: boolean) => void;
+	userId: string;
 }
 
-const ProfileBulk = ({ setOpen }: ProfileBulkProps) => {
-	const userId = useGetUserId();
-
+const ProfileBulk = ({ setOpen, userId }: ProfileBulkProps) => {
 	const { data: user, isLoading } = useGetUserAccountQuery({ accountId: userId! });
 
 	if (isLoading || !user) {

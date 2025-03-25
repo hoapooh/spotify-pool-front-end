@@ -51,7 +51,11 @@ const TrackHeader = ({ track }: { track: Track }) => {
 
 					<h1
 						className={`font-bold line-clamp-2 ${
-							track.name.length > 30 ? "text-4xl" : track.name.length > 50 ? "text-3xl" : "text-5xl"
+							track.name.length > 30
+								? "text-4xl"
+								: track.name.length > 50
+								? "text-3xl"
+								: "text-5xl leading-snug"
 						}`}
 					>
 						{track.name}
@@ -70,7 +74,7 @@ const TrackHeader = ({ track }: { track: Track }) => {
 							</AvatarFallback>
 						</Avatar>
 
-						<Link to={`/user/${track.artists[0].id}`} className="font-bold hover:underline">
+						<Link to={`/artist/${track.artists[0].id}`} className="font-bold hover:underline">
 							{track.artists[0].name}
 						</Link>
 					</div>

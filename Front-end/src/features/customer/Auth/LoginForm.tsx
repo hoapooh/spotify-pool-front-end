@@ -27,6 +27,12 @@ import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { useAppDispatch } from "@/store/hooks";
 
+interface WindowBotpress extends Window {
+	botpress?: {
+		sendEvent: (data: unknown) => Promise<void>;
+	};
+}
+
 const formSchema = z.object({
 	username: z.string(),
 	password: z.string().min(3, {
@@ -82,13 +88,13 @@ const LoginForm = () => {
 		},
 	});
 
-	function onSubmit(values: z.infer<typeof formSchema>) {
+	async function onSubmit(values: z.infer<typeof formSchema>) {
 		loginMutation({
 			username: values.username,
 			password: values.password,
 		})
 			.unwrap()
-			.then((data) => {
+			.then(async (data) => {
 				const { accessToken: authData, message } = data;
 
 				dispatch(
@@ -102,6 +108,25 @@ const LoginForm = () => {
 						},
 					})
 				);
+
+				if (
+					(window as WindowBotpress).botpress &&
+					typeof (window as WindowBotpress).botpress?.sendEvent === "function"
+				) {
+					const customPayload = {
+						payload: {
+							accessToken: authData.accessToken,
+						},
+					};
+
+					try {
+						await (window as WindowBotpress).botpress!.sendEvent(customPayload);
+						console.log("Authentication data sent to Botpress");
+					} catch (error) {
+						console.error("Failed to send authentication data to Botpress:", error);
+					}
+				}
+
 				navigate("/");
 				toast.success(message);
 			})
