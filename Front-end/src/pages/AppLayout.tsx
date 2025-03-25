@@ -49,7 +49,11 @@ function AppLayout() {
 		}
 	}, [isAuthenticated, existingUser, navigate]);
 
-	// useAuthRedirect();
+	useEffect(() => {
+		if (isAuthenticated && existingUser?.role?.includes("Artist")) {
+			navigate("/artist");
+		}
+	}, [isAuthenticated, existingUser, navigate]);
 
 	// Show loading indicator while checking auth status
 	if (isChecking) {

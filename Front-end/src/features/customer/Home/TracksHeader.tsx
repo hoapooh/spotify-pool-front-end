@@ -1,21 +1,19 @@
 import React from "react";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 interface TracksHeaderProps {
-    children: React.ReactNode;
+	children: React.ReactNode;
+	linkUrl?: string;
 }
 
-const TracksHeader = ({children}: TracksHeaderProps) => {
-    return (
-        <div className="area-headers flex items-center justify-between mb-1">
-            {/* Display title */}
-            <div className="text-2xl font-bold">{children}</div>
-            <div>
-                <Link to={"/"} className="hover:underline text-[#b3b3b3]">
-                    Show all
-                </Link>
-            </div>
-        </div>
-    );
+const TracksHeader = ({ children, linkUrl }: TracksHeaderProps) => {
+	return (
+		<div className="area-headers flex items-end gap-x-3">
+			<p className="text-2xl font-bold">{children}</p>
+			<Link to={linkUrl || "/"} className="hover:underline block text-[#b3b3b3]">
+				Show all
+			</Link>
+		</div>
+	);
 };
 export default TracksHeader;

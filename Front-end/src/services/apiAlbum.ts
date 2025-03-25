@@ -1,5 +1,5 @@
 import { apiSlice } from "@/apis/apiSlice";
-import { Album, Artists, Images, Track } from "@/types";
+import { Album, Artists, Images, Track, TrackPlaylist } from "@/types";
 
 interface AlbumParams {
 	pageNumber?: number;
@@ -31,7 +31,7 @@ interface AlbumDetailInfo {
 	artistIds: string[];
 	artists: Artists[];
 	trackIds: string[];
-	tracks: Track[];
+	tracks: Track[] | TrackPlaylist[];
 }
 
 /* interface CreateAlbumRequest {
@@ -71,6 +71,14 @@ export const albumApi = apiSlice.injectEndpoints({
 			}),
 			invalidatesTags: ["Album"],
 		}),
+		addTrackToAlbum: build.mutation<{ message: string }, { albumId: string; tracksId: FormData }>({
+			query: ({ albumId, tracksId }) => ({
+				url: `/albums/${albumId}/tracks`,
+				method: "POST",
+				body: tracksId,
+			}),
+			invalidatesTags: ["Album"],
+		}),
 		updateAlbum: build.mutation<null, { albumId: string; albumData: FormData }>({
 			query: ({ albumId, albumData }) => ({
 				url: `/albums/${albumId}`,
@@ -89,6 +97,14 @@ export const albumApi = apiSlice.injectEndpoints({
 			}),
 			invalidatesTags: ["Album"],
 		}),
+		deleteTrackFromAlbum: build.mutation<null, { albumId: string; trackIds: FormData }>({
+			query: ({ albumId, trackIds }) => ({
+				url: `/albums/${albumId}/tracks`,
+				method: "DELETE",
+				body: trackIds,
+			}),
+			invalidatesTags: ["Album"],
+		}),
 	}),
 });
 
@@ -96,6 +112,8 @@ export const {
 	useGetAlbumListQuery,
 	useGetAlbumDetailQuery,
 	useCreateAlbumMutation,
+	useAddTrackToAlbumMutation,
 	useUpdateAlbumMutation,
 	useDeleteAlbumMutation,
+	useDeleteTrackFromAlbumMutation,
 } = albumApi;

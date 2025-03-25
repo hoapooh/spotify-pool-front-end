@@ -35,12 +35,12 @@ export const trackApi = apiSlice.injectEndpoints({
 			transformResponse: (response) => response,
 			providesTags: ["Track"],
 		}),
-		getTopTracks: build.query({
+		getTopTracks: build.query<Track[], void>({
 			query: () => ({
-				url: "/tracks/top-track",
+				url: "/top-tracks",
 				method: "GET",
 			}),
-			transformResponse: (response) => response,
+			transformResponse: (response: Track[]) => response,
 			providesTags: ["Track"],
 		}),
 		uploadTrack: build.mutation<void, FormData>({
@@ -52,7 +52,7 @@ export const trackApi = apiSlice.injectEndpoints({
 					Accept: "*/*",
 				},
 			}),
-			invalidatesTags: ["Track"],
+			invalidatesTags: ["Track", "Album", "Artist"],
 		}),
 	}),
 });

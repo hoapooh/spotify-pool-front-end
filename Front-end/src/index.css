@@ -131,9 +131,9 @@ body,
 }
 
 /* ==== COMMON ==== */
-.area-headers {
+/* .area-headers {
 	min-block-size: 56px;
-}
+} */
 
 /* .area-body {
 	grid-template-rows: repeat(1, minmax(0, 1fr));

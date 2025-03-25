@@ -22,18 +22,10 @@ import {
 	Tooltip,
 	ResponsiveContainer,
 } from "recharts";
-import {
-	ArrowUpRight,
-	Music,
-	Users,
-	MicVocal,
-	TrendingUp,
-	Calendar,
-	Activity,
-	Plus,
-} from "lucide-react";
+import { Music, Users, MicVocal, TrendingUp, Calendar, Plus, Album } from "lucide-react";
 import { useGetAllUserAccountQuery } from "@/services/apiUser";
 import { useGetTracksQuery } from "@/services/apiTracks";
+import { useGetDashboardOverviewQuery } from "@/services/apiDashboard";
 
 // User activity data for the year
 const userActivityData = [
@@ -123,14 +115,10 @@ const Dashboard = () => {
 		offset: 1,
 	});
 
+	const { data: dashboardOverviewData } = useGetDashboardOverviewQuery();
+
 	const users = userAccountsData?.data || [];
 	const tracks = tracksData || [];
-
-	// Calculate totals for stat cards
-	const totalUsers = 45872;
-	const totalArtists = 12941;
-	const totalTracks = 67350;
-	const totalStreams = 2356789;
 
 	return (
 		<div className="flex flex-col gap-6">
@@ -160,13 +148,7 @@ const Dashboard = () => {
 								<Users className="h-4 w-4 text-muted-foreground" />
 							</CardHeader>
 							<CardContent>
-								<div className="text-2xl font-bold">{totalUsers.toLocaleString()}</div>
-								<p className="text-xs text-muted-foreground flex items-center mt-1">
-									<span className="text-green-400 flex items-center mr-1">
-										<ArrowUpRight className="h-3 w-3" /> 12.5%
-									</span>
-									from last month
-								</p>
+								<div className="text-2xl font-bold">{dashboardOverviewData?.totalUsers}</div>
 							</CardContent>
 						</Card>
 
@@ -176,13 +158,7 @@ const Dashboard = () => {
 								<MicVocal className="h-4 w-4 text-muted-foreground" />
 							</CardHeader>
 							<CardContent>
-								<div className="text-2xl font-bold">{totalArtists.toLocaleString()}</div>
-								<p className="text-xs text-muted-foreground flex items-center mt-1">
-									<span className="text-green-400 flex items-center mr-1">
-										<ArrowUpRight className="h-3 w-3" /> 8.3%
-									</span>
-									from last month
-								</p>
+								<div className="text-2xl font-bold">{dashboardOverviewData?.totalArtists}</div>
 							</CardContent>
 						</Card>
 
@@ -194,31 +170,23 @@ const Dashboard = () => {
 								<Music className="h-4 w-4 text-muted-foreground" />
 							</CardHeader>
 							<CardContent>
-								<div className="text-2xl font-bold">{totalTracks.toLocaleString()}</div>
-								<p className="text-xs text-muted-foreground flex items-center mt-1">
-									<span className="text-green-400 flex items-center mr-1">
-										<ArrowUpRight className="h-3 w-3" /> 14.2%
-									</span>
-									from last month
-								</p>
+								<div className="text-2xl font-bold">
+									{dashboardOverviewData?.totalTracks.toLocaleString()}
+								</div>
 							</CardContent>
 						</Card>
 
 						<Card className="bg-gradient-to-br from-[#1f1f1f] to-[#121212] border-none">
 							<CardHeader className="flex flex-row items-center justify-between pb-2">
 								<CardTitle className="text-sm font-medium text-muted-foreground">
-									Total Streams
+									Total Albums
 								</CardTitle>
-								<Activity className="h-4 w-4 text-muted-foreground" />
+								<Album className="h-4 w-4 text-muted-foreground" />
 							</CardHeader>
 							<CardContent>
-								<div className="text-2xl font-bold">{totalStreams.toLocaleString()}</div>
-								<p className="text-xs text-muted-foreground flex items-center mt-1">
-									<span className="text-green-400 flex items-center mr-1">
-										<ArrowUpRight className="h-3 w-3" /> 18.7%
-									</span>
-									from last month
-								</p>
+								<div className="text-2xl font-bold">
+									{dashboardOverviewData?.totalAlbums.toLocaleString()}
+								</div>
 							</CardContent>
 						</Card>
 					</div>
@@ -415,15 +383,15 @@ const Dashboard = () => {
 					</div>
 				</TabsContent>
 
-				<TabsContent value="users" className="h-[400px] flex items-center justify-center">
+				<TabsContent value="users" className="flex items-center justify-center">
 					<p className="text-muted-foreground">User analytics coming soon...</p>
 				</TabsContent>
 
-				<TabsContent value="artists" className="h-[400px] flex items-center justify-center">
+				<TabsContent value="artists" className="flex items-center justify-center">
 					<p className="text-muted-foreground">Artist analytics coming soon...</p>
 				</TabsContent>
 
-				<TabsContent value="tracks" className="h-[400px] flex items-center justify-center">
+				<TabsContent value="tracks" className="flex items-center justify-center">
 					<p className="text-muted-foreground">Track analytics coming soon...</p>
 				</TabsContent>
 			</Tabs>

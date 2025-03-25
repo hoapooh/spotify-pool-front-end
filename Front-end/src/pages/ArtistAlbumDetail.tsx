@@ -1,17 +1,11 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useGetAlbumDetailQuery } from "@/services/apiAlbum";
 import {
-	ArrowLeft,
-	Plus,
-	Music,
-	Pause,
-	Play,
-	MoreHorizontal,
-	Edit,
-	Trash,
-	Clock,
-} from "lucide-react";
+	useGetAlbumDetailQuery,
+	useDeleteAlbumMutation,
+	useDeleteTrackFromAlbumMutation,
+} from "@/services/apiAlbum";
+import { ArrowLeft, Plus, Music, MoreHorizontal, Edit, Trash, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Loader from "@/components/ui/Loader";
@@ -30,9 +24,6 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { playPlaylist, togglePlay } from "@/store/slice/playerSlice";
-import { setTrack } from "@/store/slice/trackSlice";
 import toast from "react-hot-toast";
 import {
 	Dialog,
@@ -44,21 +35,21 @@ import {
 } from "@/components/ui/dialog";
 import CreateAlbumModal from "@/features/artist/components/modal/CreateAlbumModal";
 import { Album } from "@/types";
-import { useDeleteAlbumMutation } from "@/services/apiAlbum";
+import CustomTooltip from "@/components/CustomTooltip";
 
 const ArtistAlbumDetail = () => {
 	const { albumId } = useParams<{ albumId: string }>();
 	const navigate = useNavigate();
-	const dispatch = useAppDispatch();
 
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+	const [isDeleteTrackDialogOpen, setIsDeleteTrackDialogOpen] = useState(false);
+	const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null);
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 	const [dominantColor] = useState("#121212");
 
 	const { data: albumDetail, isLoading, error } = useGetAlbumDetailQuery(albumId || "");
 	const [deleteAlbum, { isLoading: isDeleting }] = useDeleteAlbumMutation();
-
-	const { currentTrack, isPlaying, playlistId } = useAppSelector((state) => state.play);
+	const [deleteTrackFromAlbum, { isLoading: isDeletingTrack }] = useDeleteTrackFromAlbumMutation();
 
 	// Extract release status
 	const getReleaseStatus = () => {
@@ -82,32 +73,6 @@ const ArtistAlbumDetail = () => {
 		return statusColors[albumDetail?.info.releaseInfo?.reason || 0];
 	};
 
-	// Handle play track
-	const handlePlayTrack = useCallback(
-		(index: number) => {
-			if (!albumDetail?.tracks) return;
-
-			if (
-				currentTrack?.id === albumDetail.tracks[index].id &&
-				isPlaying &&
-				playlistId === albumId
-			) {
-				dispatch(togglePlay());
-				return;
-			}
-
-			dispatch(setTrack({ track: albumDetail.tracks[index] }));
-			dispatch(
-				playPlaylist({
-					tracks: albumDetail.tracks,
-					startIndex: index,
-					playlistId: albumId,
-				})
-			);
-		},
-		[albumDetail, currentTrack?.id, dispatch, isPlaying, playlistId, albumId]
-	);
-
 	// Handle delete album
 	const handleDelete = async () => {
 		if (!albumId) return;
@@ -125,6 +90,36 @@ const ArtistAlbumDetail = () => {
 		} finally {
 			setIsDeleteDialogOpen(false);
 		}
+	};
+
+	// Handle delete track from album
+	const handleDeleteTrack = async () => {
+		if (!albumId || !selectedTrackId) return;
+
+		try {
+			const trackIds = new FormData();
+			trackIds.append("trackIds", selectedTrackId);
+
+			await deleteTrackFromAlbum({ albumId, trackIds }).unwrap();
+
+			toast.success("Track removed from album successfully", {
+				position: "bottom-center",
+			});
+		} catch (error) {
+			console.error(error);
+			toast.error("Failed to remove track from album", {
+				position: "bottom-center",
+			});
+		} finally {
+			setIsDeleteTrackDialogOpen(false);
+			setSelectedTrackId(null);
+		}
+	};
+
+	// Open delete track confirmation dialog
+	const openDeleteTrackDialog = (trackId: string) => {
+		setSelectedTrackId(trackId);
+		setIsDeleteTrackDialogOpen(true);
 	};
 
 	if (isLoading) return <Loader />;
@@ -200,20 +195,6 @@ const ArtistAlbumDetail = () => {
 
 			{/* Action bar */}
 			<div className="mb-8 flex items-center gap-4">
-				{/* Large play button */}
-				{hasTracks && (
-					<Button
-						onClick={() => handlePlayTrack(0)}
-						className="size-14 rounded-full flex items-center justify-center shadow-lg bg-green-500 hover:bg-green-400 transition-transform hover:scale-105"
-					>
-						{isPlaying && playlistId === albumId ? (
-							<Pause className="size-6 text-black" />
-						) : (
-							<Play className="size-6 text-black ml-1" />
-						)}
-					</Button>
-				)}
-
 				{/* Add track button */}
 				<Button variant="ghost" onClick={() => navigate(`/artist/track?albumId=${albumId}`)}>
 					<Plus className="size-5 mr-2" />
@@ -279,40 +260,14 @@ const ArtistAlbumDetail = () => {
 									<TableHead className="text-right text-white/60">
 										<Clock className="h-4 w-4 ml-auto" />
 									</TableHead>
+									<TableHead className="w-16"></TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>
 								{tracks.map((track, index) => (
-									<TableRow
-										key={track.id}
-										className={`group hover:bg-white/10 border-none ${
-											currentTrack?.id === track.id && playlistId === albumId ? "bg-white/20" : ""
-										}`}
-									>
+									<TableRow key={track.id} className="group hover:bg-white/10 border-none">
 										<TableCell className="relative text-white/60 group-hover:text-white">
-											<div
-												className="size-8 cursor-pointer flex items-center justify-center"
-												onClick={() => handlePlayTrack(index)}
-											>
-												<span className="group-hover:hidden">
-													{currentTrack?.id === track.id && isPlaying && playlistId === albumId ? (
-														<img
-															src="https://open.spotifycdn.com/cdn/images/equaliser-animated-green.f5eb96f2.gif"
-															alt="music dancing"
-															className="h-4"
-														/>
-													) : (
-														index + 1
-													)}
-												</span>
-												<span className="hidden group-hover:block">
-													{currentTrack?.id === track.id && isPlaying && playlistId === albumId ? (
-														<Pause className="size-4" />
-													) : (
-														<Play className="size-4" />
-													)}
-												</span>
-											</div>
+											<div className="size-8 flex items-center justify-center">{index + 1}</div>
 										</TableCell>
 										<TableCell>
 											<div className="flex gap-3">
@@ -324,13 +279,7 @@ const ArtistAlbumDetail = () => {
 													/>
 												</div>
 												<div className="flex flex-col">
-													<div
-														className={`font-medium ${
-															currentTrack?.id === track.id ? "text-green-400" : "text-white"
-														}`}
-													>
-														{track.name}
-													</div>
+													<div className="font-medium text-white">{track.name}</div>
 													<div className="text-sm text-white/60">
 														{track.artists?.map((artist) => artist.name).join(", ")}
 													</div>
@@ -343,6 +292,32 @@ const ArtistAlbumDetail = () => {
 										<TableCell className="text-right text-white/60">
 											{formatTimeMiliseconds(track.duration)}
 										</TableCell>
+										<TableCell>
+											<DropdownMenu>
+												<DropdownMenuTrigger>
+													<CustomTooltip
+														side="top"
+														label={`More options for ${track.name}`}
+														align="end"
+													>
+														<MoreHorizontal className="size-5 cursor-pointer" />
+													</CustomTooltip>
+												</DropdownMenuTrigger>
+												<DropdownMenuContent
+													className="rounded-lg bg-[#282828] text-white border-none"
+													side="right"
+													align="start"
+												>
+													<DropdownMenuItem
+														className="hover:!bg-red-500 hover:!text-red-100"
+														onClick={() => openDeleteTrackDialog(track.id)}
+													>
+														<Trash className="h-4 w-4 mr-2" />
+														<span>Remove from album</span>
+													</DropdownMenuItem>
+												</DropdownMenuContent>
+											</DropdownMenu>
+										</TableCell>
 									</TableRow>
 								))}
 							</TableBody>
@@ -351,7 +326,7 @@ const ArtistAlbumDetail = () => {
 				)}
 			</div>
 
-			{/* Delete confirmation dialog */}
+			{/* Delete album confirmation dialog */}
 			<Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
 				<DialogContent className="bg-[#282828] text-white border-none">
 					<DialogHeader>
@@ -377,6 +352,37 @@ const ArtistAlbumDetail = () => {
 							className="ml-4"
 						>
 							{isDeleting ? "Deleting..." : "Delete"}
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+
+			{/* Delete track confirmation dialog */}
+			<Dialog open={isDeleteTrackDialogOpen} onOpenChange={setIsDeleteTrackDialogOpen}>
+				<DialogContent className="bg-[#282828] text-white border-none">
+					<DialogHeader>
+						<DialogTitle>Remove Track</DialogTitle>
+						<DialogDescription className="text-white/70">
+							Are you sure you want to remove this track from the album? This won't delete the track
+							from your library.
+						</DialogDescription>
+					</DialogHeader>
+					<DialogFooter>
+						<Button
+							variant="ghost"
+							type="button"
+							onClick={() => setIsDeleteTrackDialogOpen(false)}
+							disabled={isDeletingTrack}
+						>
+							Cancel
+						</Button>
+						<Button
+							variant={"destructive"}
+							onClick={handleDeleteTrack}
+							disabled={isDeletingTrack}
+							className="ml-4"
+						>
+							{isDeletingTrack ? "Removing..." : "Remove"}
 						</Button>
 					</DialogFooter>
 				</DialogContent>

@@ -8,10 +8,30 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import formatTimeMiliseconds from "@/utils/formatTimeMiliseconds";
-import { MusicIcon } from "lucide-react";
+import { MusicIcon, PlusCircle, MoreHorizontal, BadgePlus } from "lucide-react";
+import { useState } from "react";
+import CreateTrackModal from "@/features/artist/components/modal/CreateTrackModal";
+import { Button } from "@/components/ui/button";
+import { Track } from "@/types";
+import AddToAlbumDialog from "@/features/artist/components/dialog/AddToAlbumDialog";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import CustomTooltip from "@/components/CustomTooltip";
 
 const ArtistTrack = () => {
 	const { data: tracks, isLoading, error } = useGetArtistTracksQuery({});
+	const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+	const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
+	const [isAddToAlbumOpen, setIsAddToAlbumOpen] = useState(false);
+
+	const handleAddToAlbum = (track: Track) => {
+		setSelectedTrack(track);
+		setIsAddToAlbumOpen(true);
+	};
 
 	// Render loading state
 	if (isLoading) {
@@ -41,18 +61,31 @@ const ArtistTrack = () => {
 				</div>
 				<h2 className="text-2xl font-semibold mb-2">No tracks found</h2>
 				<p className="text-muted-foreground mb-6">You don't have any tracks available yet.</p>
-				<button className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors">
+				<Button
+					className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+					onClick={() => setIsCreateModalOpen(true)}
+				>
 					Add your first track
-				</button>
+				</Button>
+				<CreateTrackModal open={isCreateModalOpen} setOpen={setIsCreateModalOpen} />
 			</div>
 		);
 	}
 
 	return (
-		<div className="container py-8">
-			<h1 className="text-3xl font-bold mb-6">Your Tracks</h1>
+		<div>
+			<div className="flex justify-between items-center mb-6">
+				<h1 className="text-3xl font-bold">Your Tracks</h1>
+				<Button
+					className="flex items-center gap-x-2 bg-primary hover:bg-primary/90 transition-colors"
+					onClick={() => setIsCreateModalOpen(true)}
+				>
+					<PlusCircle className="size-5" />
+					<span>Add Track</span>
+				</Button>
+			</div>
 
-			<div className="bg-card rounded-lg border shadow-sm overflow-hidden">
+			<div className="rounded-lg border shadow-sm overflow-hidden">
 				<Table>
 					<TableHeader>
 						<TableRow>
@@ -61,6 +94,7 @@ const ArtistTrack = () => {
 							{/* <TableHead>Album</TableHead> */}
 							<TableHead>Added Date</TableHead>
 							<TableHead className="text-right">Duration</TableHead>
+							<TableHead className="w-[60px]"></TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
@@ -85,15 +119,43 @@ const ArtistTrack = () => {
 									</div>
 								</TableCell>
 								{/* <TableCell>{track.album?.name || "Single"}</TableCell> */}
-								<TableCell>{track.addedTime || "Unknown"}</TableCell>
+								<TableCell>{track.uploadDate || "Unknown"}</TableCell>
 								<TableCell className="text-right">
 									{formatTimeMiliseconds(track.duration)}
+								</TableCell>
+								<TableCell>
+									<DropdownMenu>
+										<DropdownMenuTrigger>
+											<CustomTooltip
+												side="top"
+												label={`More options for ${track.name}`}
+												align="end"
+											>
+												<MoreHorizontal className="size-5 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" />
+											</CustomTooltip>
+										</DropdownMenuTrigger>
+										<DropdownMenuContent className="rounded-lg" side="left" align="center">
+											<DropdownMenuItem onClick={() => handleAddToAlbum(track)}>
+												<BadgePlus />
+												<span>Add to Album</span>
+											</DropdownMenuItem>
+										</DropdownMenuContent>
+									</DropdownMenu>
 								</TableCell>
 							</TableRow>
 						))}
 					</TableBody>
 				</Table>
 			</div>
+
+			<CreateTrackModal open={isCreateModalOpen} setOpen={setIsCreateModalOpen} />
+			{selectedTrack && (
+				<AddToAlbumDialog
+					open={isAddToAlbumOpen}
+					setOpen={setIsAddToAlbumOpen}
+					track={selectedTrack}
+				/>
+			)}
 		</div>
 	);
 };

@@ -52,8 +52,12 @@ export const userApi = apiSlice.injectEndpoints({
 				url: "/customers/me/profile",
 				method: "PATCH",
 				body: data,
+				headers: {
+					// "Content-Type": "multipart/form-data",
+					Accept: "*/*",
+				},
 			}),
-			invalidatesTags: ["User"],
+			invalidatesTags: ["User", "Auth"],
 		}),
 		createUser: build.mutation({
 			query: (body) => ({

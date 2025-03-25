@@ -138,10 +138,10 @@ function ProfileModal({ open, setOpen }: ProfileModalProps) {
 		try {
 			const formData = new FormData();
 
-			formData.append("displayName", values.displayName);
+			formData.append("DisplayName", values.displayName);
 
 			if (values.imageFile) {
-				formData.append("imageFile", values.imageFile);
+				formData.append("Image", values.imageFile);
 			}
 
 			if (userId) {
@@ -153,7 +153,7 @@ function ProfileModal({ open, setOpen }: ProfileModalProps) {
 							id: userAccount.id,
 							name: values.displayName,
 							role: userAccount?.role,
-							avatar: userAccount?.avatar,
+							avatar: userData?.images ? [userData.images[0].url] : [],
 						})
 					);
 				}

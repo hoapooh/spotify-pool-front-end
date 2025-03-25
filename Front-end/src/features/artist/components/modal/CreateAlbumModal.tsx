@@ -107,12 +107,12 @@ const CreateAlbumModal = ({ open, setOpen, albumToEdit }: CreateAlbumModalProps)
 			});
 
 			// Reset preview image
-			if (previewUrl !== "https://placehold.co/200") {
+			if (previewUrl !== "https://placehold.co/200" && !form.getValues().imageFile) {
 				URL.revokeObjectURL(previewUrl);
 				setPreviewUrl("https://placehold.co/200");
 			}
 		}
-	}, [albumToEdit, open, form, userData?.artistId, previewUrl]);
+	}, [albumToEdit, open, form, userData?.artistId]);
 
 	const onSubmit = (values: z.infer<typeof formSchema>) => {
 		try {
@@ -162,8 +162,8 @@ const CreateAlbumModal = ({ open, setOpen, albumToEdit }: CreateAlbumModalProps)
 
 	// Handle image file change and generate preview
 	const handleImageChange = (file: File | null) => {
-		// Clean up previous preview URL if it exists
-		if (previewUrl && previewUrl !== "https://placehold.co/200") {
+		// Clean up previous preview URL if it exists and it's not from an album
+		if (previewUrl && previewUrl !== "https://placehold.co/200" && !albumToEdit?.images?.length) {
 			URL.revokeObjectURL(previewUrl);
 		}
 
@@ -171,11 +171,14 @@ const CreateAlbumModal = ({ open, setOpen, albumToEdit }: CreateAlbumModalProps)
 		if (file) {
 			const url = URL.createObjectURL(file);
 			setPreviewUrl(url);
+		} else if (albumToEdit?.images?.length) {
+			// If we have an album with images and the file was removed, show the album image
+			setPreviewUrl(albumToEdit.images[0].url);
 		} else {
+			// Default placeholder
 			setPreviewUrl("https://placehold.co/200");
 		}
 	};
-
 	return (
 		<Dialog open={open} onOpenChange={handleOpenChange}>
 			<DialogContent className="sm:max-w-[524px] border-none bg-[#282828]">

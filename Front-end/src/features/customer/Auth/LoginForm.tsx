@@ -132,7 +132,7 @@ const LoginForm = () => {
 							</Link>
 						</CustomTooltip>
 						<h1 className="text-2xl md:text-3xl lg:text-5xl leading-[62px] text-center font-bold text-white">
-							Log in to Spotify
+							Log in to SpotifyPool
 						</h1>
 					</header>
 

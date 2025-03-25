@@ -108,7 +108,7 @@ const baseQueryWithReAuth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
 export const apiSlice = createApi({
 	reducerPath: "api",
 	baseQuery: baseQueryWithReAuth,
-	tagTypes: ["Auth", "Playlist", "Track", "User", "Album", "Artist"],
+	tagTypes: ["Auth", "Playlist", "Track", "User", "Album", "Artist", "Dashboard"],
 	endpoints: () => ({}),
 	keepUnusedDataFor: 5,
 	refetchOnMountOrArgChange: true,

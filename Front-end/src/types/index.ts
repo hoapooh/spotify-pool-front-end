@@ -18,7 +18,8 @@ export interface Track {
 	description: string;
 	lyrics: string;
 	previewURL: string;
-	addedTime: string;
+	addedTime?: string;
+	uploadDate?: string;
 	duration: number;
 	durationFormated: string;
 	images: Images[];
@@ -50,7 +51,8 @@ export interface TrackPlaylist {
 	description: string;
 	lyrics: string;
 	previewURL: string;
-	addedTime: string;
+	addedTime?: string;
+	uploadDate?: string;
 	duration: number;
 	durationFormated: string;
 	images: Images[];

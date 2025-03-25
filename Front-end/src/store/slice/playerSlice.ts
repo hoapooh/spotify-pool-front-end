@@ -14,10 +14,10 @@ interface SetCurrentTrackPayload {
 }
 
 interface PlayerStore {
-	currentTrack: Track | null;
-	nextTrack: Track | null;
+	currentTrack: Track | TrackPlaylist | null;
+	nextTrack: Track | TrackPlaylist | null;
 	isPlaying: boolean;
-	queue: Track[] | TrackPlaylist[];
+	queue: (Track | TrackPlaylist)[];
 	currentIndex: number;
 	currentTime: number;
 	playlistId?: string;

@@ -1,8 +1,8 @@
-import { Track } from "@/types";
+import { Track, TrackPlaylist } from "@/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface TrackState {
-	track: Track | null;
+	track: Track | TrackPlaylist | null;
 }
 
 const initialState: TrackState = {

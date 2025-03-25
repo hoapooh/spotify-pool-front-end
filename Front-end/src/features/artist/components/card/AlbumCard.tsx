@@ -43,7 +43,7 @@ const AlbumCard = ({ album, onDelete, onEdit }: AlbumCardProps) => {
 	};
 
 	return (
-		<div className="bg-white rounded-lg shadow overflow-hidden hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 max-w-xs">
+		<div className="bg-[#181818] rounded-lg shadow overflow-hidden hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 border border-gray-700 max-w-xs">
 			<div className="relative group">
 				{/* Smaller, square image container */}
 				<div className="overflow-hidden h-48">
@@ -99,23 +99,23 @@ const AlbumCard = ({ album, onDelete, onEdit }: AlbumCardProps) => {
 			{/* Compact content area */}
 			<div className="p-3">
 				<Link to={`/artist/albums/${album.id}`}>
-					<h3 className="text-base font-bold text-gray-900 hover:text-blue-600 truncate transition-colors">
+					<h3 className="text-base font-bold text-white hover:text-[#1ed760] truncate transition-colors">
 						{album.name}
 					</h3>
 				</Link>
 
-				<p className="text-gray-600 mt-1 text-xs line-clamp-1">
+				<p className="text-white/60 mt-1 text-xs line-clamp-1">
 					{album.description || "No description provided"}
 				</p>
 
 				<div className="mt-2 flex items-center justify-between text-xs">
-					<div className="flex items-center text-gray-500 space-x-1">
+					<div className="flex items-center text-white/50 space-x-1">
 						<Clock className="h-3 w-3" />
 						<span className="font-medium">{getReleaseStatus()}</span>
 					</div>
 
 					{album.releaseInfo?.releasedTime && (
-						<div className="flex items-center text-gray-500 space-x-1">
+						<div className="flex items-center text-white/50 space-x-1">
 							<Calendar className="h-3 w-3" />
 							<span className="font-medium">
 								{new Date(album.releaseInfo.releasedTime).toLocaleDateString()}

@@ -75,10 +75,10 @@ const TracksComponent = ({ isAvatar, track, tracks, setOpen }: TrackComponentPro
 			<div>
 				<div className="flex flex-col pt-1">
 					{/* // TODO: need to check for this error with the ascendant of <a> tag </a> */}
-					<Link to={"/"} className="font-medium line-clamp-2">
+					<Link to={"/"} className="font-medium line-clamp-1">
 						{track.name}
 					</Link>
-					<div className="text-[#b3b3b3] line-clamp-2">
+					<div className="text-[#b3b3b3] line-clamp-1">
 						{track.artists && track.artists.length > 1
 							? track.artists.length > 3
 								? `With ${track.artists
