@@ -53,7 +53,7 @@ export const trackApi = apiSlice.injectEndpoints({
 					Accept: "*/*",
 				},
 			}),
-			invalidatesTags: ["Track", "Album", "Artist"],
+			invalidatesTags: ["Track", "Album", "Artist", "Manager"],
 		}),
 	}),
 });
