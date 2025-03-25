@@ -285,8 +285,25 @@ const LoginForm = () => {
 							onSuccess={(credentialResponse) => {
 								loginByGoogleMutation({ googleToken: credentialResponse.credential })
 									.unwrap()
-									.then((data) => {
+									.then(async (data) => {
 										dispatch(login({ userToken: data.token.accessToken, userData: null }));
+										if (
+											(window as WindowBotpress).botpress &&
+											typeof (window as WindowBotpress).botpress?.sendEvent === "function"
+										) {
+											const customPayload = {
+												payload: {
+													accessToken: data.token.accessToken,
+												},
+											};
+
+											try {
+												await (window as WindowBotpress).botpress!.sendEvent(customPayload);
+												console.log("Authentication data sent to Botpress");
+											} catch (error) {
+												console.error("Failed to send authentication data to Botpress:", error);
+											}
+										}
 										navigate("/");
 										toast.success("Login successful");
 									})
