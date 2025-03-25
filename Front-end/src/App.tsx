@@ -1,28 +1,33 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-import AppLayout from "@/pages/AppLayout";
-import HomeScreen from "@/pages/HomeScreen";
-import LoginScreen from "@/pages/LoginScreen";
-import SignupScreen from "@/pages/SignupScreen";
-import SearchScreen from "@/pages/SearchScreen";
-import ProfileScreen from "@/pages/ProfileScreen";
-import PlaylistScreen from "@/pages/PlaylistScreen";
+import AppLayout from "@/pages/Customer/AppLayout";
+import HomeScreen from "@/pages/Customer/HomeScreen";
+import LoginScreen from "@/pages/Customer/LoginScreen";
+import SignupScreen from "@/pages/Customer/SignupScreen";
+import SearchScreen from "@/pages/Customer/SearchScreen";
+import ProfileScreen from "@/pages/Customer/ProfileScreen";
+import PlaylistScreen from "@/pages/Customer/PlaylistScreen";
 import ConfirmEmailScreen from "@/pages/ConfirmEmailScreen";
 
-import AdminLayout from "./pages/AdminLayout";
+import AdminLayout from "./pages/Admin/AdminLayout";
 import LoginAdmin from "./features/admin/login/LoginAdmin";
 import Dashboard from "./features/admin/dashboard/Dashboard";
 import DashboardUser from "./features/admin/dashboard/DashboardUser";
 import ProtectedAdminRoute from "./features/admin/components/ProtectedAdminRoute";
-import TrackDetailScreen from "./pages/TrackDetailScreen";
+import TrackDetailScreen from "./pages/Customer/TrackDetailScreen";
 import ProtectedArtistRoute from "./features/artist/components/ProtectedArtistRoute";
-import ArtistLayout from "./pages/ArtistLayout";
-import ArtistAlbum from "./pages/ArtistAlbum";
+import ArtistLayout from "./pages/Artist/ArtistLayout";
+import ArtistAlbum from "./pages/Artist/ArtistAlbum";
 import NotFoundPage from "./pages/NotFoundPage";
-import ArtistTrack from "./pages/ArtistTrack";
-import ArtistAlbumDetail from "./pages/ArtistAlbumDetail";
-import ShowAllTracks from "./pages/ShowAllTracks";
-import ProfileArtistScreen from "./pages/ProfileArtistScreen";
+import ArtistTrack from "./pages/Artist/ArtistTrack";
+import ArtistAlbumDetail from "./pages/Artist/ArtistAlbumDetail";
+import ShowAllTracks from "./pages/Customer/ShowAllTracks";
+import ProfileArtistScreen from "./pages/Customer/ProfileArtistScreen";
+import ManagerLogin from "./pages/Manager/ManagerLogin";
+import ProtectedManagerRoute from "./features/manager/routes/ProtectedManagerRoute";
+import ManagerLayout from "./pages/Manager/ManagerLayout";
+import ManagerRestrictionChange from "./pages/Manager/ManagerRestrictionChange";
+import AlbumDetailScreen from "./pages/Customer/AlbumDetailScreen";
 
 const router = createBrowserRouter([
 	{
@@ -55,6 +60,10 @@ const router = createBrowserRouter([
 			{
 				path: "/artist/:artistId",
 				element: <ProfileArtistScreen />,
+			},
+			{
+				path: "/album/:albumId",
+				element: <AlbumDetailScreen />,
 			},
 		],
 	},
@@ -96,6 +105,15 @@ const router = createBrowserRouter([
 		],
 	},
 	{
+		path: "/manager",
+		element: (
+			<ProtectedManagerRoute>
+				<ManagerLayout />
+			</ProtectedManagerRoute>
+		),
+		children: [{ path: "track-restriction-change", element: <ManagerRestrictionChange /> }],
+	},
+	{
 		path: "/login",
 		element: <LoginScreen />,
 	},
@@ -110,6 +128,10 @@ const router = createBrowserRouter([
 	{
 		path: "/admin/login",
 		element: <LoginAdmin />,
+	},
+	{
+		path: "/manager/login",
+		element: <ManagerLogin />,
 	},
 	{
 		path: "*",

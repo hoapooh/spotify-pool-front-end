@@ -6,7 +6,7 @@ import ProfileHeader from "@/features/customer/Profile/ProfileHeader";
 import ProfileModal from "@/features/customer/Profile/components/Modal/ProfileModal";
 import ProfileTopTracks from "@/features/customer/Profile/ProfileTopTracks";
 import useGetUserId from "@/features/customer/Profile/hooks/useGetUserId";
-import NotFoundPage from "./NotFoundPage";
+import NotFoundPage from "../NotFoundPage";
 
 export default function ProfileScreen() {
 	const userId = useGetUserId();

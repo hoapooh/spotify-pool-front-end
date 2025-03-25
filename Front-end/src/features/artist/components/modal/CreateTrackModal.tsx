@@ -34,6 +34,8 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { useUploadTrackMutation } from "@/services/apiTracks";
+import { sendFakeNotification } from "@/components/sendFakeNotification";
+import { useAppSelector } from "@/store/hooks";
 
 interface CreateTrackModalProps {
 	open: boolean;
@@ -78,6 +80,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 const CreateTrackModal = ({ open, setOpen }: CreateTrackModalProps) => {
 	const [isCreating, setIsCreating] = useState(false);
+	const { userData } = useAppSelector((state) => state.auth);
 
 	// Refs for file inputs
 	const imageFileInputRef = useRef<HTMLInputElement | null>(null);
@@ -98,8 +101,8 @@ const CreateTrackModal = ({ open, setOpen }: CreateTrackModalProps) => {
 			audioFile: undefined,
 			imageFile: null,
 			restrictions: {
-				isPlayable: true,
-				reason: "None",
+				isPlayable: false,
+				reason: "Pending",
 				description: "",
 				restrictionDate: "",
 			},
@@ -181,15 +184,15 @@ const CreateTrackModal = ({ open, setOpen }: CreateTrackModalProps) => {
 				formData.append("ImageFile", values.imageFile);
 			}
 
-			formData.append("Restrictions.isPlayable", values.restrictions.isPlayable.toString());
-			formData.append("Restrictions.reason", values.restrictions.reason);
+			formData.append("Restrictions.IsPlayable", values.restrictions.isPlayable.toString());
+			formData.append("Restrictions.Reason", values.restrictions.reason);
 
 			if (values.restrictions.description) {
-				formData.append("Restrictions.description", values.restrictions.description);
+				formData.append("Restrictions.Description", values.restrictions.description);
 			}
 
 			if (values.restrictions.restrictionDate) {
-				formData.append("Restrictions.restrictionDate", values.restrictions.restrictionDate);
+				formData.append("Restrictions.RestrictionDate", values.restrictions.restrictionDate);
 			}
 
 			// Simulate API call for now - replace with your actual API call
@@ -198,6 +201,8 @@ const CreateTrackModal = ({ open, setOpen }: CreateTrackModalProps) => {
 			toast.success("Track created successfully", {
 				position: "bottom-center",
 			});
+
+			sendFakeNotification({ artistName: userData!.name });
 
 			// Cleanup and reset
 			form.reset();

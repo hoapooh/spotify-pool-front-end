@@ -6,6 +6,7 @@ interface TrackParams {
 	limit?: number;
 	searchTerm?: string;
 	sortByName?: boolean;
+	RestrictionReason?: "Pending" | "None" | "Market" | "Product" | "Explicit" | "Other";
 }
 
 export const trackApi = apiSlice.injectEndpoints({

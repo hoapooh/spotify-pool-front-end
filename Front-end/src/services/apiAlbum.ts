@@ -11,7 +11,7 @@ interface AlbumParams {
 	isSortByName?: boolean;
 }
 
-interface AlbumDetailInfo {
+export interface AlbumDetailInfo {
 	info: {
 		id: string;
 		name: string;

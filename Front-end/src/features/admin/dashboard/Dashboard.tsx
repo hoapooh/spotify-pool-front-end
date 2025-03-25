@@ -9,7 +9,6 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import {
 	CartesianGrid,
 	Line,
@@ -22,111 +21,58 @@ import {
 	Tooltip,
 	ResponsiveContainer,
 } from "recharts";
-import { Music, Users, MicVocal, TrendingUp, Calendar, Plus, Album } from "lucide-react";
-import { useGetAllUserAccountQuery } from "@/services/apiUser";
-import { useGetTracksQuery } from "@/services/apiTracks";
-import { useGetDashboardOverviewQuery } from "@/services/apiDashboard";
-
-// User activity data for the year
-const userActivityData = [
-	{ month: "January", active: 1286, new: 480 },
-	{ month: "February", active: 1805, new: 400 },
-	{ month: "March", active: 2037, new: 520 },
-	{ month: "April", active: 2273, new: 590 },
-	{ month: "May", active: 2509, new: 630 },
-	{ month: "June", active: 2714, new: 440 },
-	{ month: "July", active: 3150, new: 500 },
-	{ month: "August", active: 3350, new: 350 },
-	{ month: "September", active: 3650, new: 450 },
-	{ month: "October", active: 3950, new: 400 },
-	{ month: "November", active: 4250, new: 550 },
-	{ month: "December", active: 4550, new: 450 },
-];
-
-// Track streams by genre
-const genreData = [
-	{ name: "Pop", value: 35 },
-	{ name: "Hip Hop", value: 25 },
-	{ name: "Rock", value: 15 },
-	{ name: "EDM", value: 12 },
-	{ name: "R&B", value: 13 },
-];
+import { Music, Users, MicVocal, TrendingUp, Album, Loader } from "lucide-react";
+import {
+	useGetDashboardOverviewQuery,
+	useGetDashboardTrackArtistQuery,
+	useGetUserGrowthQuery,
+	useGetUserRoleDistributionQuery,
+} from "@/services/apiDashboard";
+import formatTimeMiliseconds from "@/utils/formatTimeMiliseconds";
 
 // Colors for the pie chart
-const COLORS = ["#1DB954", "#4285F4", "#EA4335", "#FBBC05", "#34A853"];
-
-// Top artists mock data
-const topArtists = [
-	{
-		id: "1",
-		name: "Taylor Swift",
-		followers: 25480000,
-		image: "https://i.scdn.co/image/ab6761610000e5eb5a00969a4698c3bc4a9e3cee",
-	},
-	{
-		id: "2",
-		name: "The Weeknd",
-		followers: 19750000,
-		image: "https://i.scdn.co/image/ab6761610000e5eb214f3cf1cbe7139c1e26ffbb",
-	},
-	{
-		id: "3",
-		name: "Drake",
-		followers: 18900000,
-		image: "https://i.scdn.co/image/ab6761610000e5eb4293385d324db8558179afd9",
-	},
-	{
-		id: "4",
-		name: "Billie Eilish",
-		followers: 16700000,
-		image: "https://i.scdn.co/image/ab6761610000e5ebd8b9980db67272cb4d2c3daf",
-	},
-	{
-		id: "5",
-		name: "Ariana Grande",
-		followers: 16200000,
-		image: "https://i.scdn.co/image/ab6761610000e5eb0e8ffcd90ca84e4c929b065b",
-	},
-];
+const COLORS = ["#1DB954", "#4285F4", "#EA4335", "#FBBC05", "#34A853", "#8BD5CA", "#CBA6F7"];
 
 // Chart configurations
 const userChartConfig = {
-	active: {
+	activeUsers: {
 		label: "Active Users",
 		color: "hsl(var(--chart-1))",
 	},
-	new: {
+	newUsers: {
 		label: "New Users",
 		color: "hsl(var(--chart-2))",
 	},
 } satisfies ChartConfig;
 
 const Dashboard = () => {
-	// Use the existing API hooks to fetch real data
-	const { data: userAccountsData } = useGetAllUserAccountQuery({
-		pageNumber: 1,
-		pageSize: 5,
-		displayName: true,
-		status: "Active",
-	});
+	const { data: dashboardOverviewData, isLoading: isOverviewLoading } =
+		useGetDashboardOverviewQuery();
+	const { data: dashboardTrackArtist, isLoading: isTrackArtistLoading } =
+		useGetDashboardTrackArtistQuery();
+	const { data: userGrowth, isLoading: isUserGrowthLoading } = useGetUserGrowthQuery();
+	const { data: roleDistribution, isLoading: isRoleDistributionLoading } =
+		useGetUserRoleDistributionQuery();
 
-	const { data: tracksData } = useGetTracksQuery({
-		limit: 5,
-		offset: 1,
-	});
+	// Loading states
+	const isLoading =
+		isOverviewLoading || isTrackArtistLoading || isUserGrowthLoading || isRoleDistributionLoading;
 
-	const { data: dashboardOverviewData } = useGetDashboardOverviewQuery();
-
-	const users = userAccountsData?.data || [];
-	const tracks = tracksData || [];
+	if (isLoading) {
+		return (
+			<div className="flex items-center justify-center h-[calc(100vh-200px)]">
+				<Loader className="size-10 animate-spin" />
+			</div>
+		);
+	}
 
 	return (
 		<div className="flex flex-col gap-6">
 			<div className="flex items-center justify-between">
 				<h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-				<Button variant="outline" className="gap-2">
+				{/* <Button variant="outline" className="gap-2">
 					<Calendar className="h-4 w-4" /> Last 30 days
-				</Button>
+				</Button> */}
 			</div>
 
 			<Tabs defaultValue="overview" className="space-y-6">
@@ -200,7 +146,7 @@ const Dashboard = () => {
 							</CardHeader>
 							<CardContent>
 								<ChartContainer config={userChartConfig} className="h-80 w-full">
-									<LineChart accessibilityLayer data={userActivityData}>
+									<LineChart accessibilityLayer data={userGrowth}>
 										<CartesianGrid strokeDasharray="3 3" vertical={false} />
 										<XAxis
 											dataKey="month"
@@ -214,16 +160,16 @@ const Dashboard = () => {
 										<ChartLegend content={<ChartLegendContent />} />
 										<Line
 											type="monotone"
-											dataKey="active"
-											stroke="var(--color-active)"
+											dataKey="activeUsers"
+											stroke="var(--color-activeUsers)"
 											strokeWidth={2}
 											dot={{ r: 0 }}
 											activeDot={{ r: 4 }}
 										/>
 										<Line
 											type="monotone"
-											dataKey="new"
-											stroke="var(--color-new)"
+											dataKey="newUsers"
+											stroke="var(--color-newUsers)"
 											strokeWidth={2}
 											dot={{ r: 0 }}
 											activeDot={{ r: 4 }}
@@ -235,31 +181,36 @@ const Dashboard = () => {
 
 						<Card className="col-span-3 shadow-md bg-gradient-to-br from-[#1f1f1f] to-[#121212]">
 							<CardHeader>
-								<CardTitle>Track Distribution by Genre</CardTitle>
-								<CardDescription>Percentage of tracks by genre</CardDescription>
+								<CardTitle>User Role Distribution</CardTitle>
+								<CardDescription>Percentage of users by role</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<div className="h-80 w-full flex items-center justify-center">
 									<ResponsiveContainer width="100%" height="100%">
 										<PieChart>
 											<Pie
-												data={genreData}
-												cx="50%"
+												data={roleDistribution}
+												cx="40%"
 												cy="50%"
 												labelLine={false}
 												outerRadius={100}
 												fill="#8884d8"
-												dataKey="value"
-												label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+												dataKey="percentage"
+												nameKey="role"
+												label={({ role, percentage }) => `${role}: ${percentage.toFixed(1)}%`}
 											>
-												{genreData.map((entry, index) => (
-													<Cell
-														key={`cell-${index}-${entry}`}
-														fill={COLORS[index % COLORS.length]}
-													/>
-												))}
+												{roleDistribution &&
+													roleDistribution.map((entry, index) => (
+														<Cell
+															key={`cell-${index}-${entry.role}`}
+															fill={COLORS[index % COLORS.length]}
+														/>
+													))}
 											</Pie>
-											<Tooltip formatter={(value) => `${value}%`} />
+											<Tooltip
+												formatter={(value, name) => [`${value}%`, name]}
+												labelFormatter={(label) => `Role: ${label}`}
+											/>
 										</PieChart>
 									</ResponsiveContainer>
 								</div>
@@ -275,16 +226,13 @@ const Dashboard = () => {
 									<CardTitle>Top Artists</CardTitle>
 									<CardDescription>Most followed artists this month</CardDescription>
 								</div>
-								<Button variant="outline" size="sm">
-									<Plus className="mr-2 h-4 w-4" /> View All
-								</Button>
 							</CardHeader>
 							<CardContent>
 								<div className="space-y-4">
-									{topArtists.map((artist) => (
+									{dashboardTrackArtist?.topArtists.map((artist) => (
 										<div key={artist.id} className="flex items-center gap-4">
 											<Avatar className="h-10 w-10">
-												<AvatarImage src={artist.image} alt={artist.name} />
+												<AvatarImage src={artist.images[0].url || ""} alt={artist.name} />
 												<AvatarFallback>{artist.name.charAt(0)}</AvatarFallback>
 											</Avatar>
 											<div className="flex-1 space-y-1">
@@ -293,7 +241,10 @@ const Dashboard = () => {
 													{artist.followers.toLocaleString()} followers
 												</p>
 											</div>
-											<TrendingUp className="h-4 w-4 text-green-500" />
+											<div className="flex items-center text-xs text-green-500 font-medium">
+												<TrendingUp className="h-4 w-4 text-green-500 mr-1" />
+												{artist.popularity}%
+											</div>
 										</div>
 									))}
 								</div>
@@ -303,41 +254,29 @@ const Dashboard = () => {
 						<Card className="shadow-md bg-gradient-to-br from-[#1f1f1f] to-[#121212]">
 							<CardHeader className="flex flex-row items-center justify-between">
 								<div>
-									<CardTitle>Recent Users</CardTitle>
-									<CardDescription>Latest joined users</CardDescription>
+									<CardTitle>New Tracks</CardTitle>
+									<CardDescription>Recently uploaded tracks</CardDescription>
 								</div>
-								<Button variant="outline" size="sm">
-									<Plus className="mr-2 h-4 w-4" /> View All
-								</Button>
 							</CardHeader>
 							<CardContent>
 								<div className="space-y-4">
-									{users.slice(0, 5).map((user) => (
-										<div key={user.userId} className="flex items-center gap-4">
-											<Avatar className="h-10 w-10 object-cover">
-												<AvatarImage
-													className="object-cover"
-													src={user.images?.[0]?.url}
-													alt={user.displayName}
+									{dashboardTrackArtist?.newTracks.map((track) => (
+										<div key={track.id} className="flex items-center gap-4">
+											<div className="flex h-10 w-10 items-center justify-center rounded-md bg-muted">
+												<img
+													src={track.images[0].url || "https://placehold.co/40"}
+													alt={track.name}
+													className="h-10 w-10 rounded-md object-cover"
 												/>
-												<AvatarFallback>{user.displayName?.charAt(0) || "U"}</AvatarFallback>
-											</Avatar>
-											<div className="flex-1 space-y-1">
-												<p className="text-sm font-medium">{user.displayName}</p>
-												<p className="text-xs text-muted-foreground">{user.email}</p>
 											</div>
-											<span
-												className={`px-2 py-0.5 rounded-md text-xs font-medium border ${
-													user.status === "Active"
-														? "bg-emerald-900/30 text-emerald-400 border-emerald-600"
-														: user.status === "Inactive"
-														? "bg-amber-900/30 text-amber-400 border-amber-600"
-														: user.status === "Banned"
-														? "bg-rose-900/30 text-rose-400 border-rose-600"
-														: "bg-slate-800/50 text-slate-300 border-slate-600"
-												}`}
-											>
-												{user.status}
+											<div className="flex-1 space-y-1">
+												<p className="text-sm font-medium line-clamp-1">{track.name}</p>
+												<p className="text-xs text-muted-foreground line-clamp-1">
+													{new Date(track.uploadDate).toLocaleDateString()}
+												</p>
+											</div>
+											<span className="text-xs font-mono text-muted-foreground">
+												{formatTimeMiliseconds(track.duration)}
 											</span>
 										</div>
 									))}
@@ -351,17 +290,14 @@ const Dashboard = () => {
 									<CardTitle>Top Tracks</CardTitle>
 									<CardDescription>Most streamed tracks this month</CardDescription>
 								</div>
-								<Button variant="outline" size="sm">
-									<Plus className="mr-2 h-4 w-4" /> View All
-								</Button>
 							</CardHeader>
 							<CardContent>
 								<div className="space-y-4">
-									{tracks.slice(0, 5).map((track, index) => (
-										<div key={track.id + index} className="flex items-center gap-4">
+									{dashboardTrackArtist?.topTracks.map((track) => (
+										<div key={track.id} className="flex items-center gap-4">
 											<div className="flex h-10 w-10 items-center justify-center rounded-md bg-muted">
 												<img
-													src={track.images?.[2]?.url || "https://placehold.co/40"}
+													src={track.images[0].url || "https://placehold.co/40"}
 													alt={track.name}
 													className="h-10 w-10 rounded-md object-cover"
 												/>
@@ -369,11 +305,11 @@ const Dashboard = () => {
 											<div className="flex-1 space-y-1">
 												<p className="text-sm font-medium line-clamp-1">{track.name}</p>
 												<p className="text-xs text-muted-foreground line-clamp-1">
-													{track.artists?.[0]?.name || "Unknown Artist"}
+													{track.streamCount.toLocaleString()} streams
 												</p>
 											</div>
 											<span className="text-xs font-mono text-muted-foreground">
-												{track.durationFormated}
+												{formatTimeMiliseconds(track.duration)}
 											</span>
 										</div>
 									))}

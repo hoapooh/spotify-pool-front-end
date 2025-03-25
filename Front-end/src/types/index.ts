@@ -111,3 +111,41 @@ export interface Album {
 		reason: number;
 	};
 }
+
+export interface TopTracksDashboard {
+	id: string;
+	name: string;
+	streamCount: number;
+	duration: number;
+	uploadDate: string;
+	images: Images[];
+}
+
+export interface TopArtists {
+	id: string;
+	name: string;
+	followers: number;
+	popularity: number;
+	images: Images[];
+}
+
+export interface NewTracks {
+	id: string;
+	name: string;
+	streamCount: number;
+	duration: number;
+	uploadDate: string;
+	images: Images[];
+}
+
+export interface UserGrowth {
+	month: string;
+	newUsers: number;
+	activeUsers: number;
+}
+
+export interface UserRoleDistribution {
+	role: string;
+	count: number;
+	percentage: number;
+}
